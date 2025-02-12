@@ -1,0 +1,91 @@
+<!-- ALERTA -->
+<p-toast position="bottom-right"></p-toast>
+
+<!-- PERFIL DE EMPRESA -->
+<div class="grid dashboard">
+    <div class="col-12 md:col-12 lg:6">
+        <div class="perfil-empleador">
+            <div class="header">
+                <div class="header-left">
+                    <h2>Perfil de Empleador</h2>
+                </div>
+                <div class="header-right">
+                    <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
+                    <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
+                    <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span>
+                </div>
+                
+            </div>
+
+            <div>
+                <div class="surface-ground px-4 py-4 md:px-6 lg:px-8">
+                    <div class="grid">
+                        
+                        <div class="col-12 md:col-6 lg:col-3">
+                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
+                                <div class="mb-3 flex justify-content-center">
+                                    <div class="flex align-items-center justify-content-center bg-orange-100 border-round-lg p-3" style="width:3rem;height:3rem">
+                                        <i class="pi pi-briefcase text-orange-500 text-2xl"></i>
+                                    </div>
+                                </div>
+                                <span class="block text-500 font-medium mb-2">NIT</span>
+                                <div class="text-900 font-bold text-2xl"> {{ empresa?.EMP_NIT || '---' }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 md:col-6 lg:col-3">
+                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
+                              <div class="mb-3 flex justify-content-center">
+                                <div class="flex align-items-center justify-content-center bg-green-100 border-round-lg p-3" style="width:3rem;height:3rem">
+                                  <i class="pi pi-users text-green-500 text-2xl"></i>
+                                </div>
+                              </div>
+                              <span class="block text-500 font-medium mb-2">TRABAJADORES</span>
+                              <div class="text-900 font-bold text-2xl">
+                                {{ totalTrabajadores || '---' }}
+                              </div>
+                            </div>
+                          </div>
+                          
+                        
+                        <div class="col-12 md:col-6 lg:col-3">
+                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
+                                <div class="mb-3 flex justify-content-center">
+                                    <div class="flex align-items-center justify-content-center bg-cyan-100 border-round-lg p-3" style="width:3rem;height:3rem">
+                                        <i class="pi pi-inbox text-cyan-500 text-2xl"></i>
+                                    </div>
+                                </div>
+                                <span class="block text-500 font-medium mb-2">OBSERVADOS</span>
+                                <div class="text-900 font-bold text-2xl">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 md:col-6 lg:col-3">
+                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
+                                <div class="mb-3 flex justify-content-center">
+                                    <div class="flex align-items-center justify-content-center bg-pink-100 border-round-lg p-3" style="width:3rem;height:3rem">
+                                        <i class="pi pi-upload text-pink-500 text-2xl"></i>
+                                    </div>
+                                </div>
+                                <span class="block text-500 font-medium mb-2">PLANILLAS PENDIENTES</span>
+                                <div class="text-900 font-bold text-2xl">0</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="perfil-contenido">
+                <table class="perfil-table">
+                    <tr><th>Representante Legal:</th> <td>{{ empresa?.EMP_LEGAL || '---' }}</td></tr>
+                    <tr><th>Dirección:</th> <td>{{ empresa?.EMP_CALLE || '---' }} # {{ empresa?.EMP_NUM || '---' }}</td></tr>
+                    <tr><th>Teléfono:</th> <td>{{ empresa?.EMP_TELF || '---' }}</td></tr>
+                    <tr><th>NIT:</th> <td>{{ empresa?.EMP_NIT || '---' }}</td></tr>
+                    <tr><th>Zona:</th> <td>{{ empresa?.EMP_ZONA || '---' }}</td></tr>
+                    <tr><th>Actividad Económica:</th> <td>{{ empresa?.EMP_ACTIV || '---' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

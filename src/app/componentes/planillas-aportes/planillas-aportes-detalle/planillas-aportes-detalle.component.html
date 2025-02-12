@@ -1,0 +1,148 @@
+<div class="header">
+    <div class="header-left">
+        <h2>INFORMACION DE LA PLANILLA - {{ planillaInfo.planilla.com_nro }} </h2>
+        
+        <span class="razon-social">MES: {{ planillaInfo.planilla.mes }} | GESTION: {{ planillaInfo.planilla.gestion }}</span>
+        <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
+         <span class="numero-patronal"> N° DE TRABAJADORES : {{ planillaInfo.planilla.total_trabaj }} | TOTAL IMPORTE : {{ planillaInfo.planilla.total_importe }} Bs </span>
+           
+    </div>
+    <div class="header-right">
+        <!-- <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
+        <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
+        <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span> -->
+        <div class="button-container">
+          <button 
+              pButton 
+              label="Exportar a Excel" 
+              icon="pi pi-file-excel" 
+              class="p-button-success" 
+              (click)="exportarExcel()"
+          ></button>
+          <button
+              pButton
+              label="Guardar y Enviar Planilla "
+              icon="pi pi-upload"
+              class="p-button-primary"
+              (click)="guardarYEnviar()"
+          ></button>
+
+          
+        </div>
+    </div>
+    
+</div>
+<div [ngSwitch]="planillaInfo.planilla.estado" [ngStyle]="{'background-color': getFondoEstado(planillaInfo.planilla.estado)}" style="padding: 20px;">
+  <div *ngSwitchCase="3">
+    <a class="btn btn-info" href="" style="background-color: #d15a5a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
+      <i class="pi pi-envelope"></i> 
+      Planilla Observada
+    </a>
+    <span style="color: aliceblue;"> 
+      DETALLES DE OBSERVACIÓN: {{ planillaInfo.planilla.observaciones || 'Ninguna' }}
+    </span>
+  </div>
+
+  <div *ngSwitchCase="2">
+    <a class="btn btn-info" href="" style="background-color: #5ad15a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
+      <i class="pi pi-check"></i> 
+      PLANILLA APROBADA
+    </a>
+  </div>
+
+  <div *ngSwitchDefault>
+    <a class="btn btn-info" href="" style="background-color: #cfd15a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
+      <i class="pi pi-eye"></i> 
+      EN ESPERA DE APROBACIÓN
+    </a>
+  </div>
+</div>
+
+<p-table
+  [value]="trabajadores"
+  [paginator]="true"
+  [rows]="10"
+  [loading]="loading"
+  responsiveLayout="scroll"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Nro</th>
+      <th>CI</th>
+      <th>Nombre Completo</th>
+      <th>Cargo</th>
+      <th>Salario</th>
+      <th>Fecha de Ingreso</th>
+      <th>Regional</th>
+      <th>Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-trabajador let-i="rowIndex">
+    <tr>
+      <td>{{ trabajador.nro }}</td>
+      <td>{{ trabajador.ci }}</td>
+      <td>{{ trabajador.apellido_paterno }} {{ trabajador.nombres }}</td>
+      <td>{{ trabajador.cargo }}</td>
+      <td>{{ trabajador.salario }}</td>
+      <td>{{ trabajador.fecha_ingreso }}</td>
+      <td>{{ trabajador.regional }}</td>
+      <td>
+        <button
+          pButton
+          icon="pi pi-pencil"
+         
+          (click)="editarTrabajador(trabajador)"
+          class="p-button-warning p-button-sm"
+          style="width: 100%; height: 25px;"
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="displayModal" [modal]="true" [style]="{ width: '50vw' }">
+  <ng-template pTemplate="header">
+    <h2>Editar Trabajador</h2>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="p-fluid">
+      <div class="p-field">
+        <label for="ci">CI</label>
+        <input id="ci" pInputText [(ngModel)]="trabajadorSeleccionado.ci" />
+      </div>
+      <div class="p-field">
+        <label for="apellido_paterno">Apellido Paterno</label>
+        <input id="apellido_paterno" pInputText [(ngModel)]="trabajadorSeleccionado.apellido_paterno" />
+      </div>
+      <div class="p-field">
+        <label for="nombres">Nombres</label>
+        <input id="nombres" pInputText [(ngModel)]="trabajadorSeleccionado.nombres" />
+      </div>
+      <div class="p-field">
+        <label for="cargo">Cargo</label>
+        <input id="cargo" pInputText [(ngModel)]="trabajadorSeleccionado.cargo" />
+      </div>
+      <div class="p-field">
+        <label for="salario">Salario</label>
+        <input id="salario" pInputText type="number" [(ngModel)]="trabajadorSeleccionado.salario" />
+      </div>
+      <div class="p-field">
+        <label for="fecha_ingreso">Fecha de Ingreso</label>
+        <input id="fecha_ingreso" pInputText [(ngModel)]="trabajadorSeleccionado.fecha_ingreso" />
+      </div>
+      <div class="p-field">
+        <label for="regional">Regional</label>
+        <p-dropdown
+          id="regional"
+          [options]="regionales"
+          [(ngModel)]="trabajadorSeleccionado.regional"
+        ></p-dropdown>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" icon="pi pi-times" (click)="displayModal = false" class="p-button-text"></button>
+    <button pButton label="Guardar" icon="pi pi-check" (click)="guardarEdicion()" class="p-button-success"></button>
+  </ng-template>
+</p-dialog>
+

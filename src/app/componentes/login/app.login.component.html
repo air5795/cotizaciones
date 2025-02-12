@@ -1,0 +1,75 @@
+
+<div class="total" style="background: url('../../../assets/demo/images/galleria/FONDO15.png') no-repeat center center; background-size: cover;">
+
+
+<div class="log" 
+style="background-color: #ffffff2a;
+padding: 50px;
+border-radius: 25px;
+margin-right: 150px;
+backdrop-filter: blur(10px);
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+">
+    <div class="login-panel p-fluid">
+        <div class="">
+            <div class="col-12 Cabezera " style="text-align: center;color: white;">
+                <img src="../../../assets/demo/images/galleria/logo-text2.png" style="width: 350px;">
+                
+                <h4>SISTEMA - COTIZACIONES</h4>
+                <hr>
+                
+            </div>
+            <form novalidate (ngSubmit)="verificarUsuario()" [formGroup]="usuario">
+                <div class="col-12">
+                    <label for="usuario" style="color: white;">Usuario</label>
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon">
+                            <i class="pi pi-user"></i> 
+                        </span>
+                        <input id="usuario" type="text" class="p-inputtext-lg" formControlName="usuario" pInputText />
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <label for="contrasenia" style="color: white;">Contraseña</label>
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon">
+                            <i class="pi pi-lock"></i> 
+                        </span>
+                        <input id="contrasenia" type="password" class="p-inputtext-lg" formControlName="contrasenia" pInputText />
+                    </div>
+                </div>
+                
+            <div class="col-12 button-container " >
+                <button 
+                pButton type="submit" 
+                [disabled]="usuario.invalid" 
+                label="Ingresar Sistema" 
+                icon="pi pi-sign-in"
+                [style]="{'background': '#1c5546b8', 'color': 'white !important'}"
+                ></button>
+            </div>
+
+            
+          </form>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.total {
+    width: 100%;
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    background-color: aquamarine; /* Color de fondo */
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+</style> 

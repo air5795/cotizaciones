@@ -1,0 +1,292 @@
+<div class="header">
+    <div class="header-left">
+        <h2>HISTORICO -  PLANILLAS DE APORTES </h2>
+        <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
+        <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
+        <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span>
+    </div>
+    <div class="header-right">
+        <!-- <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
+        <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
+        <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span> -->
+    </div>
+    
+</div>
+  
+
+<p-table 
+#tablaPlanillasAportes
+class="tabla-centrada" 
+[value]="planillas" 
+[paginator]="true" 
+[rows]="10" 
+[loading]="loading" 
+responsiveLayout="scroll"
+[rowsPerPageOptions]="[5,10,20,25,30]"
+[paginator]="true" 
+styleClass="p-datatable-gridlines" 
+>
+<ng-template pTemplate="caption">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+      <span class="block mt-2 md:mt-0 p-input-icon-left">
+        <i class="pi pi-search"></i>
+        
+      </span>
+      <span class="block mt-2 md:mt-0 p-input-icon-left">
+        <!-- <button 
+        pButton 
+        label="Declarar Planilla" 
+        icon="pi pi-upload" 
+        class="p-button-primary" 
+        (click)="mostrarModal = true"
+        ></button> -->
+
+        <p-button label="Declarar Nueva  Planilla" icon="pi pi-book" class="p-button-primary" (click)="mostrarModal = true"></p-button>
+      </span>
+    </div>
+  </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+     
+        <th>N° de Comprobante</th>
+        <th>Fecha Declarada</th>
+        <th>Mes</th>
+        <th>Gestión</th>
+        <th>Total trabajadores</th>
+        <th >Total importe</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-planilla>
+  <tr>
+    <td>COM-{{ planilla.com_nro }}</td>
+    <td>{{ planilla.fecha_creacion | date: 'dd/MM/yyyy' }}</td>
+    <td>{{ planilla.mes }}</td>
+    <td>{{ planilla.gestion }}</td>
+    <td style="text-align: center;">
+      <button class="btn btn-primary" style="color: #009688; font-size: 18px; font-weight: 600; border: none; background-color: white;">
+        {{ planilla.total_trabaj }}
+      </button>
+    </td>
+    <td style="background-color: #f3fff7;">
+      <span>{{ planilla.total_importe | currency:'BOB - ':'symbol':'1.2-2' }}</span>
+    </td>
+    <td style="width: 200px; text-align: center;">
+        <!-- Contenedor principal con flexbox -->
+        <div class="semaforo-container">
+          <!-- Semáforo con los 3 círculos visibles, solo uno marcado -->
+          <div class="semaforo">
+            <!-- Círculo amarillo para pendiente, solo se marca si el estado es pendiente -->
+            <span [class.yellow]="planilla.estado === 1" [class.gray]="planilla.estado !== 1" class="circle"></span>
+            <!-- Círculo rojo para observado, solo se marca si el estado es observado -->
+            <span [class.red]="planilla.estado === 3" [class.gray]="planilla.estado !== 3" class="circle"></span>
+            <!-- Círculo verde para aprobado, solo se marca si el estado es aprobado -->
+            <span [class.green]="planilla.estado === 2" [class.gray]="planilla.estado !== 2" class="circle"></span>
+          </div>
+          <!-- Botones de estado -->
+          <div class="label-container">
+            <button *ngIf="planilla.estado === 1" class="estado-btn pendiente" style="width: 100px;">Pendiente</button>
+            <button *ngIf="planilla.estado === 2" class="estado-btn aprobado" style="width: 100px;">Aprobado</button>
+            <button *ngIf="planilla.estado === 3" class="estado-btn observado" style="width: 100px;">Observado</button>
+          </div>
+        </div>
+      </td>
+    <td>
+        <button 
+        pButton 
+        type="button" 
+        label="Ver Detalle"
+        icon="pi pi-eye" 
+        (click)="verDetalle(planilla.id_planilla_aportes)"
+        [style]="{backgroundColor: '#07bdab', color: 'white' , width: '100%',borderRadius: '0px', height: '25px'}"
+      ></button>
+    </td>
+  </tr>
+</ng-template>
+      
+      
+      
+      
+      
+      
+  </p-table>
+  
+
+  <!-- Modal para subir planilla, seleccionar mes y gestión -->
+<!-- <p-dialog [(visible)]="mostrarModal" [modal]="true" header="DECLARACIÓN DE PLANILLA DE APORTES MENSUAL" [closable]="false" [style]="{width: '400px'}">
+    <div class="p-field">
+        <label for="archivo">Seleccionar archivo (.xlsx)</label>
+        <input type="file" id="archivo" accept=".xlsx, .xls" (change)="seleccionarArchivo($event)">
+    </div>
+
+    <div class="p-field">
+        <label for="mes">Mes</label>
+        <p-dropdown id="mes" [options]="meses" [(ngModel)]="mesSeleccionado" placeholder="Seleccione el mes"></p-dropdown>
+    </div>
+
+    <div class="p-field">
+        <label for="gestion">Gestión</label>
+        <input pInputText id="gestion" type="number" [(ngModel)]="gestionSeleccionada" placeholder="Ingrese la gestión">
+    </div>
+
+    <div class="p-d-flex p-jc-between">
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="cancelarSubida()"></button>
+        <button pButton label="Subir" icon="pi pi-upload" class="p-button-primary" (click)="subirPlanilla()" [disabled]="!archivoSeleccionado || !mesSeleccionado || !gestionSeleccionada"></button>
+    </div>
+</p-dialog> -->
+
+
+<!-- Modal con Stepper para Declarar Planilla -->
+<p-dialog [(visible)]="mostrarModal" [modal]="true" header="Declaración de Planilla de Aportes Mensual" [closable]="true" [style]="{width: '1400px'}">
+    <p-steps [model]="steps" [(activeIndex)]="activeIndex" [style]="{padding: '20px'}"></p-steps>
+
+
+    <!-- Paso 1: Elegir Mes y Gestión -->
+    <div *ngIf="activeIndex === 0">
+        <div class="flex flex-column" style="height: calc(100% - 50px);"> 
+
+            <div class="grid">
+                <div class="col">
+                    <div class="text-center p-3 border-round-sm bg-primary font-bold">
+                        <h5>Mes</h5>
+                        <p-dropdown id="mes" [options]="meses" [(ngModel)]="mesSeleccionado" placeholder="Seleccione el mes" appendTo="body"></p-dropdown>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="text-center p-3 border-round-sm bg-primary font-bold">
+                        <h5>Gestión</h5>
+                        <p-dropdown id="gestion" [options]="gestiones" [(ngModel)]="gestionSeleccionada" placeholder="Seleccione la gestión" appendTo="body"></p-dropdown>
+                    </div>
+                </div>
+            </div>
+            
+            
+
+        
+    
+        </div>
+    
+        <!-- Contenedor para el botón "Siguiente" -->
+        <div class="p-d-flex p-jc-end" style="margin-top: auto; padding-top: 50px;">
+        <button pButton label="Siguiente" icon="pi pi-arrow-right" (click)="nextStep()"></button>
+        </div>
+    </div>
+  
+
+    <!-- Paso 2: Importar Planilla y Ver Datos -->
+    <div *ngIf="activeIndex === 1">
+        <div class="p-field" style="background-color: #f0fff2;text-align: center;">
+            <label for="archivo" class="p-d-block font-bold">Seleccionar archivo (solo .xlsx) (Excel) </label>
+            <div class="file-upload-container">
+              <!-- El input file sigue oculto -->
+              <input 
+                type="file" 
+                id="archivo" 
+                accept=".xlsx, .xls" 
+                (change)="seleccionarArchivo($event)" 
+                class="file-upload-input" 
+                #fileInput
+              />
+              <!-- Botón que simula el clic en el input -->
+              <button type="button" class="file-upload-button" (click)="fileInput.click()">
+                <i class="pi pi-upload"></i> Cargar archivo
+              </button>
+            </div>
+            <small class="p-d-block text-muted">Por favor, sube un archivo en formato .xlsx o .xls</small>
+          </div>
+          
+          
+
+    
+
+          <div *ngIf="planillaDatos.length > 0">
+            <p-table [value]="planillaDatos" responsiveLayout="scroll" styleClass="p-datatable-gridlines" scrollable="true" [scrollHeight]="'200px'">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Nro</th>
+                  <th>CI</th>
+                  <th>Apellido Paterno</th>
+                  <th>Apellido Materno</th>
+                  <th>Nombres</th>
+                  <th>Cargo</th>
+                  <th style="width: 200px;">Salario</th> <!-- Ajustamos el ancho de la columna Salario -->
+                  <th>Fecha de Ingreso</th>
+                  <th>Fecha de Retiro</th>
+                  <th>Regional</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-trabajador>
+                <tr>
+                  <td>{{ trabajador['Nro.'] }}</td>
+                  <td>{{ trabajador['Número documento de identidad'] }}</td>
+                  <td>{{ trabajador['Apellido Paterno'] }}</td>
+                  <td>{{ trabajador['Apellido Materno'] }}</td>
+                  <td>{{ trabajador['Nombres'] }}</td>
+                  <td>{{ trabajador['Cargo'] }}</td>
+                  <td style="width: 200px;">{{ trabajador['Haber Básico'] | currency:'Bs ':'symbol':'1.2-2' }}</td> <!-- Ancho para la celda -->
+                  <td>{{ trabajador['Fecha de ingreso'] | date: 'dd/MM/yyyy ' }}</td>
+                  <td>{{ trabajador['Fecha de retiro'] | date: 'dd/MM/yyyy ' }}</td>
+                  <td>{{ trabajador['regional'] }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          
+          
+
+      <div class="p-d-flex p-jc-between" style="margin-top: auto; padding-top: 50px;">
+        <button pButton label="Atrás" icon="pi pi-arrow-left" (click)="prevStep()" style="margin-right: 15px;background-color: #6a8582;"></button>
+        <button pButton label="Siguiente" icon="pi pi-arrow-right" (click)="nextStep()" [disabled]="!planillaDatos.length"></button>
+    </div>
+    
+    
+    </div>
+
+<!-- Paso 3: Verificar Datos y Declarar Planilla -->
+<div *ngIf="activeIndex === 2">
+    <div class="p-card p-mb-3" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; margin: 0 auto;">
+        <div class="p-card-body" style="padding: 20px; text-align: center;">
+            <div class="p-d-flex p-flex-column">
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 20px;">Resumen de Planilla a Declarar</h3>
+                <p>Verifique su información</p>
+                
+                <div class="p-d-flex p-ai-center p-mb-3" style="border-bottom: 1px solid #e0e0e0; padding: 10px 0; justify-content: center;">
+                    <i class="pi pi-calendar p-mr-2" style="font-size: 1.5rem; color: #009688; margin-right: 5px;"></i>
+                    <label class="p-mb-0" style="font-size: 1rem; color: #34495e;">Mes: <strong style="color: #2c3e50;">{{ mesSeleccionado }}</strong></label>
+                </div>
+                
+                <div class="p-d-flex p-ai-center p-mb-3" style="border-bottom: 1px solid #e0e0e0; padding: 10px 0; justify-content: center;">
+                    <i class="pi pi-calendar-plus p-mr-2" style="font-size: 1.5rem; color: #009688; margin-right: 5px;"></i>
+                    <label class="p-mb-0" style="font-size: 1rem; color: #34495e;">Gestión: <strong style="color: #2c3e50;">{{ gestionSeleccionada }}</strong></label>
+                </div>
+                
+                <div class="p-d-flex p-ai-center p-mb-3" style="border-bottom: 1px solid #e0e0e0; padding: 10px 0; justify-content: center;">
+                    <i class="pi pi-users p-mr-2" style="font-size: 1.5rem; color: #009688; margin-right: 5px;"></i>
+                    <label class="p-mb-0" style="font-size: 1rem; color: #34495e;">Cantidad de Trabajadores: <strong style="color: #2c3e50;">{{ contarTrabajadores() }}</strong></label>
+                </div>
+                
+                <div class="p-d-flex p-ai-center" style="border-bottom: 1px solid #e0e0e0; padding: 10px 0; justify-content: center;">
+                    <i class="pi pi-money-bill p-mr-2" style="font-size: 1.5rem; color: #009688; margin-right: 5px;"></i>
+                    <label class="p-mb-0" style="font-size: 1rem; color: #34495e;">Total Importe: <strong style="color: #2c3e50;">{{ obtenerTotalImporte() | currency:'Bs ':'symbol':'1.2-2' }}</strong></label>
+                </div>
+            </div>
+
+            <hr>
+
+            <button  pButton label="Declarar Planilla" icon="pi pi-check" (click)="declararPlanilla()" [disabled]="!planillaDatos.length"></button>
+        </div>
+    </div>
+      
+  
+    <div class="p-d-flex p-jc-between">
+      <button pButton label="Atrás" icon="pi pi-arrow-left" (click)="prevStep()" style="margin-right: 15px;background-color: #6a8582;"></button>
+      <!-- <button pButton label="Declarar Planilla" icon="pi pi-check" (click)="declararPlanilla()" [disabled]="!planillaDatos.length"></button> -->
+    </div>
+  </div>
+  
+  
+
+
+  </p-dialog>
