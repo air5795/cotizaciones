@@ -1,14 +1,28 @@
+<div class="grid dashboard">
+  <div class="col-12 md:col-12 lg:6">
+      <div class="perfil-empleador">
 <div class="header">
     <div class="header-left">
-        <h2>HISTORICO -  PLANILLAS DE APORTES </h2>
-        <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
+        <h2>PLANILLAS DE APORTES  - {{ empresa?.EMP_NOM || 'Cargando...' }} </h2>
+        
         <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
-        <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span>
+        <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span>  
     </div>
     <div class="header-right">
         <!-- <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
         <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
         <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span> -->
+        
+
+      <button
+                pButton
+                label="Declarar Nueva  Planilla"
+                class="p-button-primary"
+                style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
+                (click)="mostrarModal = true"
+                >
+                <span class="pi pi-book" style="font-size: 2rem; padding-bottom: 10px;"></span>
+                </button>
     </div>
     
 </div>
@@ -41,7 +55,7 @@ styleClass="p-datatable-gridlines"
         (click)="mostrarModal = true"
         ></button> -->
 
-        <p-button label="Declarar Nueva  Planilla" icon="pi pi-book" class="p-button-primary" (click)="mostrarModal = true"></p-button>
+        
       </span>
     </div>
   </ng-template>
@@ -97,10 +111,10 @@ styleClass="p-datatable-gridlines"
         <button 
         pButton 
         type="button" 
-        label="Ver Detalle"
+        label="Ver Planilla"
         icon="pi pi-eye" 
         (click)="verDetalle(planilla.id_planilla_aportes)"
-        [style]="{backgroundColor: '#07bdab', color: 'white' , width: '100%',borderRadius: '0px', height: '25px'}"
+        [style]="{backgroundColor: '#007063', color: 'white' , width: '100%',borderRadius: '0px'}"
       ></button>
     </td>
   </tr>
@@ -114,29 +128,6 @@ styleClass="p-datatable-gridlines"
   </p-table>
   
 
-  <!-- Modal para subir planilla, seleccionar mes y gestión -->
-<!-- <p-dialog [(visible)]="mostrarModal" [modal]="true" header="DECLARACIÓN DE PLANILLA DE APORTES MENSUAL" [closable]="false" [style]="{width: '400px'}">
-    <div class="p-field">
-        <label for="archivo">Seleccionar archivo (.xlsx)</label>
-        <input type="file" id="archivo" accept=".xlsx, .xls" (change)="seleccionarArchivo($event)">
-    </div>
-
-    <div class="p-field">
-        <label for="mes">Mes</label>
-        <p-dropdown id="mes" [options]="meses" [(ngModel)]="mesSeleccionado" placeholder="Seleccione el mes"></p-dropdown>
-    </div>
-
-    <div class="p-field">
-        <label for="gestion">Gestión</label>
-        <input pInputText id="gestion" type="number" [(ngModel)]="gestionSeleccionada" placeholder="Ingrese la gestión">
-    </div>
-
-    <div class="p-d-flex p-jc-between">
-        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="cancelarSubida()"></button>
-        <button pButton label="Subir" icon="pi pi-upload" class="p-button-primary" (click)="subirPlanilla()" [disabled]="!archivoSeleccionado || !mesSeleccionado || !gestionSeleccionada"></button>
-    </div>
-</p-dialog> -->
-
 
 <!-- Modal con Stepper para Declarar Planilla -->
 <p-dialog [(visible)]="mostrarModal" [modal]="true" header="Declaración de Planilla de Aportes Mensual" [closable]="true" [style]="{width: '1400px'}">
@@ -149,13 +140,13 @@ styleClass="p-datatable-gridlines"
 
             <div class="grid">
                 <div class="col">
-                    <div class="text-center p-3 border-round-sm bg-primary font-bold">
+                    <div class="text-center p-3 border-round-sm  font-bold" style="background-color: #e2f5e7;">
                         <h5>Mes</h5>
                         <p-dropdown id="mes" [options]="meses" [(ngModel)]="mesSeleccionado" placeholder="Seleccione el mes" appendTo="body"></p-dropdown>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="text-center p-3 border-round-sm bg-primary font-bold">
+                    <div class="text-center p-3 border-round-sm  font-bold" style="background-color: #e2f5e7;">
                         <h5>Gestión</h5>
                         <p-dropdown id="gestion" [options]="gestiones" [(ngModel)]="gestionSeleccionada" placeholder="Seleccione la gestión" appendTo="body"></p-dropdown>
                     </div>

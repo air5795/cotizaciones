@@ -74,7 +74,7 @@ export class PlanillasAportesDetalleComponent implements OnInit {
       case 2:
         return 'rgb(119, 219, 119)'; // Verde claro para "Planilla Aprobada"
       default:
-        return '#d1db77'; // Amarillo claro para "En Espera de Aprobación"
+        return '#77bcdb'; // azul claro para "En Espera de Aprobación"
     }
   }
 

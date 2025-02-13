@@ -10,21 +10,28 @@ export class PlanillasAportesService {
 
   constructor(private http: HttpClient) {}
 
-  subirPlanilla(archivo: File, codPatronal: string, mes: string, gestion: string): Observable<any> {
+  subirPlanilla(archivo: File, codPatronal: string, mes: string, empresa: string, gestion: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', archivo);
     formData.append('cod_patronal', codPatronal);
-    formData.append('mes', mes);
     formData.append('gestion', gestion);
+    formData.append('mes', mes);
+    formData.append('empresa', empresa);
+    
 
     return this.http.post(`${environment.url}planillas_aportes/subir`, formData, {
       headers: new HttpHeaders().set('Accept', 'application/json')
     });
   }
 
-  getPlanillas(): Observable<any> {
-    return this.http.get(`${environment.url}planillas_aportes/historial/730-0001`);
+  getPlanillas(cod_patronal: string): Observable<any> {
+    return this.http.get(`${environment.url}planillas_aportes/historial/${cod_patronal}`);
   }
+
+  getPlanillasTodo(): Observable<any> {
+    return this.http.get(`${environment.url}planillas_aportes/historial`);
+  }
+  
 
   getPlanillaId(id_planilla: number): Observable<any> {
     return this.http.get(`${environment.url}planillas_aportes/${id_planilla}`);
@@ -37,6 +44,11 @@ export class PlanillasAportesService {
   enviarCorreccionPlanilla(id_planilla: number, trabajadores: any[]): Observable<any> {
     const body = { trabajadores };
     return this.http.put(`${environment.url}planillas_aportes/corregir/${id_planilla}`, body);
+  }
+
+  actualizarEstadoPlanilla(id_planilla: number, estado: number, observaciones?: string): Observable<any> {
+    const body = { estado, observaciones };
+    return this.http.put(`${environment.url}planillas_aportes/estado/${id_planilla}`, body);
   }
 
   

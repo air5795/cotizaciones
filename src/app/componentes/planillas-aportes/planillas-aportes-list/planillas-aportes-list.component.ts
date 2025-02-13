@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LocalService } from '../../../servicios/local/local.service';
+import { EmpresaService } from '../../../servicios/empresa/empresa.service';
+
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -23,7 +25,8 @@ mesSeleccionado: string = '';
 gestiones: { label: string; value: number }[] = []; // Gestiones disponibles para seleccionar en modal stepper
 gestionSeleccionada: number | null = null;
 planillaDatos: any[] = [];  // Datos extraídos de la planilla Excel para el modal steper
-
+numPatronal: string | null = null;
+nomEmpresa: string | null = null;
 
 meses = [
   { label: 'ENERO', value: 'ENERO' },
@@ -49,14 +52,31 @@ steps = [
 
   constructor(
     private planillasService: PlanillasAportesService,
+    private localService: LocalService,
+    private empresaService: EmpresaService,
     private router: Router,
     private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.generarGestiones();
-    this.obtenerPlanillas();
+
+  
+    this.obtenerNumeroPatronal();
+    if (this.numPatronal) {
+      this.obtenerDatosEmpresa(this.numPatronal);
+    } else {
+      console.warn('Número patronal no encontrado en localStorage.');
+    }
+
+    if (this.numPatronal) {
+      this.obtenerPlanillas(this.numPatronal.slice(3));
+      console.log('🔍 Buscando planillas de aportes para:', this.numPatronal);
+    } else {
+      console.error('⚠️ El número patronal no es válido.');
+    }
   }
+  
 
     // Generar el arreglo de gestiones
     generarGestiones() {
@@ -69,19 +89,68 @@ steps = [
       ];
     }
 
-  obtenerPlanillas() {
-    this.planillasService.getPlanillas().subscribe({
-      next: (data) => {
-        this.planillas = data.planillas;
-        console.log('Planillas de Aportes:', this.planillas);
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error al obtener planillas:', err);
-        this.loading = false;
+    obtenerNumeroPatronal() {
+      try {
+        const usuarioRestriccion = JSON.parse(this.localService.getLocalStorage('usuarioRestriccion') || '{}');
+        this.numPatronal = usuarioRestriccion?.numPatronalEmpresa || null;
+        this.nomEmpresa = usuarioRestriccion?.empresa || null;
+        if (this.numPatronal) {
+          console.log('COD patronal:', this.numPatronal.slice(3));
+          console.log('Nombre empresa:', this.nomEmpresa);
+        }
+  
+        if (!this.numPatronal) {
+          console.error('⚠️ No se encontró el número patronal en localStorage.');
+        } else {
+          console.log(`✅ Número patronal obtenido: ${this.numPatronal}`);
+        }
+      } catch (error) {
+        console.error('❌ Error al obtener número patronal:', error);
       }
-    });
-  }
+    }
+
+    obtenerPlanillas(cod_patronal: string) {
+      if (!cod_patronal) {
+        console.error('⚠️ El número patronal no es válido.');
+        return;
+      }
+      
+      this.planillasService.getPlanillas(cod_patronal).subscribe({
+        next: (data) => {
+          this.planillas = data.planillas;
+          console.log('Planillas de Aportes:', this.planillas);
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error al obtener planillas:', err);
+          this.loading = false;
+        }
+      });
+    }
+    
+
+    obtenerDatosEmpresa(numPatronal: string) {
+      console.log(`🔍 Buscando empresa con número patronal: ${numPatronal}`);
+    
+      this.empresaService.getEmpresaByNroPatronal(numPatronal).subscribe(
+        (response) => {
+          console.log("📡 Respuesta de la API:", response);
+    
+          if (response && response.length > 0) {
+            this.empresa = response[0];
+            console.log("🏢 Empresa asignada:", this.empresa);
+    
+          } else {
+            console.warn('⚠️ No se encontró información para este número patronal.');
+          }
+        },
+        (error) => {
+          console.error('❌ Error al obtener datos de la empresa:', error);
+        }
+      );
+    }
+
+
 
   verDetalle(id_planilla: number) {
     this.router.navigate(['/cotizaciones/planillas-aportes', id_planilla]);
@@ -199,9 +268,12 @@ declararPlanilla() {
       // Llamada al servicio para subir la planilla
       this.planillasService.subirPlanilla(
         this.archivoSeleccionado!,
-        '730-0001', // Aquí deberíamos obtenerlo dinámicamente
-        this.mesSeleccionado,
-        this.gestionSeleccionada!.toString()
+        this.numPatronal ? this.numPatronal.slice(3) : '',
+        this.mesSeleccionado,  // Cambia el orden aquí
+        this.nomEmpresa ? this.nomEmpresa : '',
+        this.gestionSeleccionada!.toString(),  // Cambia el orden aquí
+        
+        
       ).subscribe({
         next: (response) => {
           // Alerta de éxito al subir la planilla
@@ -218,7 +290,9 @@ declararPlanilla() {
             }
           });
           console.log('✅ Respuesta del servidor:', response);
-          this.obtenerPlanillas(); // Actualizar la lista de planillas
+         // Después de subir la planilla exitosamente, vuelve a obtener las planillas actualizadas
+          this.obtenerPlanillas(this.numPatronal!.slice(3));
+
           // Limpiar los datos y cerrar el modal
           this.cancelarSubida();
         },

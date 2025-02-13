@@ -1,60 +1,66 @@
-<div class="header">
-    <div class="header-left">
-        <h2>INFORMACION DE LA PLANILLA - {{ planillaInfo.planilla.com_nro }} </h2>
-        
-        <span class="razon-social">MES: {{ planillaInfo.planilla.mes }} | GESTION: {{ planillaInfo.planilla.gestion }}</span>
-        <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
-         <span class="numero-patronal"> N° DE TRABAJADORES : {{ planillaInfo.planilla.total_trabaj }} | TOTAL IMPORTE : {{ planillaInfo.planilla.total_importe }} Bs </span>
-           
-    </div>
-    <div class="header-right">
-        <!-- <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
-        <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
-        <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span> -->
-        <div class="button-container">
-          <button 
-              pButton 
-              label="Exportar a Excel" 
-              icon="pi pi-file-excel" 
-              class="p-button-success" 
-              (click)="exportarExcel()"
-          ></button>
-          <button
-              pButton
-              label="Guardar y Enviar Planilla "
-              icon="pi pi-upload"
-              class="p-button-primary"
-              (click)="guardarYEnviar()"
-          ></button>
-
-          
+<div class="grid dashboard">
+  <div class="col-12 md:col-12 lg:6">
+    <div class="perfil-empleador">
+      <div class="header">
+        <div class="header-left">
+          <h2>INFORMACION DE LA PLANILLA - {{ planillaInfo.planilla.com_nro }} </h2>
+          <span class="razon-social">MES: {{ planillaInfo.planilla.mes }} | GESTION: {{ planillaInfo.planilla.gestion }}</span>
+          <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
+          <span class="numero-patronal"> N° DE TRABAJADORES : {{ planillaInfo.planilla.total_trabaj }} | TOTAL IMPORTE : {{ planillaInfo.planilla.total_importe }} Bs </span>
         </div>
+        <div class="header-right">
+          <div class="button-container">
+            
+
+            <button
+                *ngIf="planillaInfo.planilla.estado !== 1"
+                pButton
+                label="Exportar a Excel" 
+                class="p-button-success"
+                style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
+                (click)="exportarExcel()"
+                >
+                <span class="pi pi-file-excel" style="font-size: 2rem; padding-bottom: 10px;"></span>
+                </button>
+            
+
+            <button
+                *ngIf="planillaInfo.planilla.estado === 3"
+                pButton
+                label=" Enviar Planilla"
+                class="p-button-primary"
+                style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
+                (click)="guardarYEnviar()"
+                >
+                <span class="pi pi-upload" style="font-size: 2rem; padding-bottom: 10px;"></span>
+                </button>
+          </div>
+        </div>
+      </div>
+      <div [ngSwitch]="planillaInfo.planilla.estado" [ngStyle]="{'background-color': getFondoEstado(planillaInfo.planilla.estado)}" style="padding: 20px;">
+        <div *ngSwitchCase="3">
+          <a class="btn btn-info" href="" style="background-color: #d15a5a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
+            <i class="pi pi-envelope"></i> 
+            Planilla Observada
+          </a>
+          <span style="color: aliceblue;"> 
+            DETALLES DE OBSERVACIÓN: {{ planillaInfo.planilla.observaciones || 'Ninguna' }}
+          </span>
+        </div>
+        <div *ngSwitchCase="2">
+          <a class="btn btn-info" href="" style="background-color: #5ad15a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
+            <i class="pi pi-check"></i> 
+            PLANILLA APROBADA
+          </a>
+        </div>
+        <div *ngSwitchDefault>
+          <a class="btn btn-info" href="" style="background-color: #77a1cb;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
+            <i class="pi pi-eye"></i> 
+            <strong> PLANILLA ENVIADA : </strong> EN ESPERA DE APROBACIÓN 
+          </a>
+        </div>
+      </div>
     </div>
-    
-</div>
-<div [ngSwitch]="planillaInfo.planilla.estado" [ngStyle]="{'background-color': getFondoEstado(planillaInfo.planilla.estado)}" style="padding: 20px;">
-  <div *ngSwitchCase="3">
-    <a class="btn btn-info" href="" style="background-color: #d15a5a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
-      <i class="pi pi-envelope"></i> 
-      Planilla Observada
-    </a>
-    <span style="color: aliceblue;"> 
-      DETALLES DE OBSERVACIÓN: {{ planillaInfo.planilla.observaciones || 'Ninguna' }}
-    </span>
-  </div>
-
-  <div *ngSwitchCase="2">
-    <a class="btn btn-info" href="" style="background-color: #5ad15a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
-      <i class="pi pi-check"></i> 
-      PLANILLA APROBADA
-    </a>
-  </div>
-
-  <div *ngSwitchDefault>
-    <a class="btn btn-info" href="" style="background-color: #cfd15a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
-      <i class="pi pi-eye"></i> 
-      EN ESPERA DE APROBACIÓN
-    </a>
   </div>
 </div>
 
@@ -74,7 +80,7 @@
       <th>Salario</th>
       <th>Fecha de Ingreso</th>
       <th>Regional</th>
-      <th>Acciones</th>
+      <th *ngIf="planillaInfo.planilla.estado === 3">Acciones</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-trabajador let-i="rowIndex">
@@ -86,11 +92,10 @@
       <td>{{ trabajador.salario }}</td>
       <td>{{ trabajador.fecha_ingreso }}</td>
       <td>{{ trabajador.regional }}</td>
-      <td>
+      <td *ngIf="planillaInfo.planilla.estado === 3">
         <button
           pButton
           icon="pi pi-pencil"
-         
           (click)="editarTrabajador(trabajador)"
           class="p-button-warning p-button-sm"
           style="width: 100%; height: 25px;"
@@ -145,4 +150,3 @@
     <button pButton label="Guardar" icon="pi pi-check" (click)="guardarEdicion()" class="p-button-success"></button>
   </ng-template>
 </p-dialog>
-

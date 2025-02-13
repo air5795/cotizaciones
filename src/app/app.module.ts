@@ -126,6 +126,8 @@ import { MessageService } from 'primeng/api';
 import { PlanillasAportesComponent } from './componentes/planillas-aportes/planillas-aportes.component';
 import { PlanillasAportesListComponent } from './componentes/planillas-aportes/planillas-aportes-list/planillas-aportes-list.component';
 import { PlanillasAportesDetalleComponent } from './componentes/planillas-aportes/planillas-aportes-detalle/planillas-aportes-detalle.component';
+import { PlanillasAportesAprobarComponent } from './componentes/planillas-aportes/planillas-aportes-aprobar/planillas-aportes-aprobar.component';
+import { PlanillasAportesDetalleAprobarComponent } from './componentes/planillas-aportes/planillas-aportes-detalle-aprobar/planillas-aportes-detalle-aprobar.component';
 
 
 @NgModule({
@@ -246,6 +248,8 @@ import { PlanillasAportesDetalleComponent } from './componentes/planillas-aporte
     PlanillasAportesComponent,
     PlanillasAportesListComponent,
     PlanillasAportesDetalleComponent,
+    PlanillasAportesAprobarComponent,
+    PlanillasAportesDetalleAprobarComponent,
   ],
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, CountryService, CustomerService, EventService, IconService, NodeService,
     PhotoService, ProductService, MenuService , MessageService],
