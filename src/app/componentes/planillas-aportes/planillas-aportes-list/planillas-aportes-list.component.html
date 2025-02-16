@@ -9,20 +9,32 @@
         <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span>  
     </div>
     <div class="header-right">
+      <div class="button-container">
         <!-- <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
         <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
         <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span> -->
         
+        <button
+                pButton
+                label="Descargar Plantilla"
+                class="p-button-success custom-button"
+                style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
+                (click)="mostrarModal = true"
+                >
+                <span class="pi pi-file-excel" style="font-size: 2rem; padding-bottom: 10px;"></span>
+                </button>
 
       <button
                 pButton
                 label="Declarar Nueva  Planilla"
-                class="p-button-primary"
+                class="p-button-primary custom-button"
                 style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
                 (click)="mostrarModal = true"
                 >
                 <span class="pi pi-book" style="font-size: 2rem; padding-bottom: 10px;"></span>
                 </button>
+
+              </div>
     </div>
     
 </div>

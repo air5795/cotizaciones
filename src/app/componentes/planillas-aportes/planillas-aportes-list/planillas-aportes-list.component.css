@@ -494,10 +494,68 @@
 
 
 
+  .button-container {
+    display: flex;
+    gap: 10px; /* Ajusta este valor para controlar la separación entre los botones */
+}
 
 
 
+  .custom-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1rem;
+    /* padding: 1rem 2rem; */
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
+.custom-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+}
+
+.custom-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.custom-icon {
+    font-size: 2rem;
+    padding-bottom: 10px;
+}
+
+/* Colores específicos para cada botón */
+.p-button-danger.custom-button {
+    background-color: #ff6565;
+    color: white;
+}
+
+.p-button-danger.custom-button:hover {
+    background-color: #eb3f3f;
+}
+
+.p-button-success.custom-button {
+    background-color: #3a915d;
+    color: white;
+}
+
+.p-button-success.custom-button:hover {
+    background-color: #007E33;
+}
+
+.p-button-info.custom-button {
+    background-color: #44bbae;
+    color: white;
+}
+
+.p-button-info.custom-button:hover {
+    background-color: #3aa195;
+}
 
 
 

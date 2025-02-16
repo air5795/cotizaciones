@@ -12,7 +12,7 @@ import { saveAs } from 'file-saver';
 })
 export class PlanillasAportesDetalleAprobarComponent {
 
-  idPlanilla!: number;
+    idPlanilla!: number;
     trabajadores: any[] = [];
     loading = true;
     displayModal = false;
@@ -38,6 +38,12 @@ export class PlanillasAportesDetalleAprobarComponent {
       { label: 'Aprobado', value: 2 },
       { label: 'Observado', value: 3 }
     ];
+
+    altas: any[] = [];
+    bajas: any[] = [];
+
+    displayPdfModal: boolean = false; // Controla la visibilidad del modal
+    pdfSrc: string = ''; // URL del PDF para mostrar en el iframe
   
     
   
@@ -48,11 +54,37 @@ export class PlanillasAportesDetalleAprobarComponent {
       this.obtenerDetalles();
       this.obtenerInformacionPlanilla(); 
     }
+
+    obtenerMesAnterior(mesActual: string): string | null {
+      const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+      const index = meses.indexOf(mesActual.toUpperCase());
+      return index > 0 ? meses[index - 1] : null;
+    }
+
+    obtenerComparacionPlanillas() {
+      if (!this.planillaInfo.planilla) return;
+  
+      const { cod_patronal, gestion, mes } = this.planillaInfo.planilla;
+      const mesAnterior = this.obtenerMesAnterior(mes);
+  
+      if (!mesAnterior) return;
+  
+      this.planillasService.compararPlanillas(cod_patronal, gestion, mesAnterior, mes).subscribe({
+        next: (data) => {
+          this.altas = data.altas;
+          this.bajas = data.bajas;
+        },
+        error: (err) => {
+          console.error('Error al comparar planillas:', err);
+        }
+      });
+    }
   
     obtenerInformacionPlanilla() {
       this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
         next: (data) => {
           this.planillaInfo = data; 
+          this.obtenerComparacionPlanillas();
           console.log('Información de la planilla:', this.planillaInfo);
         },
         error: (err) => {
@@ -68,6 +100,7 @@ export class PlanillasAportesDetalleAprobarComponent {
         next: (data) => {
           this.trabajadores = data.trabajadores;
           this.loading = false;
+          console.log('Detalles de la planilla:', this.trabajadores);
         },
         error: (err) => {
           console.error('Error al obtener detalles:', err);
@@ -129,5 +162,76 @@ export class PlanillasAportesDetalleAprobarComponent {
         confirmButtonText: 'Ok'
       });
     }
+
+    exportarPdf() {
+      if (!this.planillaInfo.planilla) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No hay datos',
+          text: 'No se ha cargado la información de la planilla.',
+          confirmButtonText: 'Ok'
+        });
+        return;
+      }
+    
+      const { cod_patronal, gestion, mes } = this.planillaInfo.planilla;
+      const mesAnterior = this.obtenerMesAnterior(mes);
+    
+      if (!mesAnterior) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No hay mes anterior',
+          text: 'No se puede generar el reporte de bajas sin un mes anterior.',
+          confirmButtonText: 'Ok'
+        });
+        return;
+      }
+    
+      this.planillasService.generarReporteBajas(this.idPlanilla, cod_patronal, mesAnterior, mes, gestion).subscribe({
+        next: (data: Blob) => {
+          // Crear una URL con el Blob del PDF
+          const fileURL = URL.createObjectURL(data);
+    
+          // Configurar la ventana emergente
+          const ventanaEmergente = window.open("", "VistaPreviaPDF", "width=900,height=600,scrollbars=no,resizable=no");
+    
+          if (ventanaEmergente) {
+            // Escribir el contenido HTML dentro de la ventana emergente
+            ventanaEmergente.document.write(`
+              <html>
+                <head>
+                  <title>Vista Previa del PDF</title>
+                  <style>
+                    body { margin: 0; text-align: center; }
+                    iframe { width: 100%; height: 100vh; border: none; }
+                  </style>
+                </head>
+                <body>
+                  <iframe src="${fileURL}"></iframe>
+                </body>
+              </html>
+            `);
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo abrir la vista previa del PDF. Es posible que el navegador haya bloqueado la ventana emergente.',
+              confirmButtonText: 'Ok'
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Error al generar el reporte de bajas:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo generar el reporte de bajas.',
+            confirmButtonText: 'Ok'
+          });
+        }
+      });
+    }
+    
+    
 
 }

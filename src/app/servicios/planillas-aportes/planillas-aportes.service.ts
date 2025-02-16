@@ -51,5 +51,17 @@ export class PlanillasAportesService {
     return this.http.put(`${environment.url}planillas_aportes/estado/${id_planilla}`, body);
   }
 
+  compararPlanillas(cod_patronal: string, gestion: string, mesAnterior: string, mesActual: string): Observable<any> {
+    return this.http.get<any>(`${environment.url}planillas_aportes/comparar/${cod_patronal}/${gestion}/${mesAnterior}/${mesActual}`);
+  }
+
+  generarReporteBajas(id_planilla: number,cod_patronal: string, mesAnterior: string, mesActual: string, gestion: string): Observable<Blob> {
+    return this.http.get(`${environment.url}planillas_aportes/reporte-bajas/${id_planilla}/${cod_patronal}/${mesAnterior}/${mesActual}/${gestion}`, {
+      responseType: 'blob' 
+    });
+  }
+  
+  
+
   
 }
