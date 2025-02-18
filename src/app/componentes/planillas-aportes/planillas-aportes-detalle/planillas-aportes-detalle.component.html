@@ -10,6 +10,25 @@
         </div>
         <div class="header-right">
           <div class="button-container">
+
+            <button pButton 
+            label="Eliminar detalles de la Planilla" 
+            class="p-button-danger"
+            (click)="confirmarEliminacionDetalles()">
+      <span class="pi pi-trash"></span>
+    </button>
+    
+    <button pButton 
+    label="Importar nueva Planilla" 
+    class="p-button-success"
+    (click)="importarNuevaPlanilla()" 
+    [disabled]="!archivoSeleccionado">
+<span class="pi pi-upload"></span>
+</button>
+
+
+
+
             
 
             <button
@@ -150,3 +169,11 @@
     <button pButton label="Guardar" icon="pi pi-check" (click)="guardarEdicion()" class="p-button-success"></button>
   </ng-template>
 </p-dialog>
+
+
+
+
+<div class="p-field">
+  <label for="archivo" class="p-d-block font-bold">Seleccionar archivo (Excel) </label>
+  <input type="file" id="archivo" accept=".xlsx, .xls" (change)="seleccionarArchivo($event)" class="p-inputtext">
+</div>

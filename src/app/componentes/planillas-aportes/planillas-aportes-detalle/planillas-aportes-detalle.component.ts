@@ -18,6 +18,10 @@ export class PlanillasAportesDetalleComponent implements OnInit {
   trabajadorSeleccionado: any = {};
   planillaInfo: any = {};
 
+  mostrarModalImportacion = false;
+  archivoSeleccionado: File | null = null;
+
+
   regionales = [
     { label: 'LA PAZ', value: 'LA PAZ' },
     { label: 'COCHABAMBA', value: 'COCHABAMBA' },
@@ -39,6 +43,67 @@ export class PlanillasAportesDetalleComponent implements OnInit {
     this.obtenerDetalles();
     this.obtenerInformacionPlanilla(); 
   }
+
+  seleccionarArchivo(event: any) {
+    this.archivoSeleccionado = event.target.files[0];
+    if (this.archivoSeleccionado) {
+        console.log("Archivo seleccionado:", this.archivoSeleccionado.name);
+    }
+}
+
+importarNuevaPlanilla() {
+  if (!this.archivoSeleccionado) {
+      Swal.fire({ icon: 'warning', title: 'Seleccione un archivo', text: 'Debe seleccionar un archivo antes de importar.' });
+      return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e: any) => {
+      const binaryString = e.target.result;
+      const workbook = XLSX.read(binaryString, { type: 'binary' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      const headers = data[0] as string[];
+      let trabajadores = data.slice(1).map((row: any) => {
+          let rowData: any = {};
+          headers.forEach((header: string, index: number) => {
+              rowData[header] = row[index];
+          });
+          return rowData;
+      });
+
+      // 🔥 Filtrar filas vacías (deben tener al menos un dato válido)
+      trabajadores = trabajadores.filter(row => 
+          Object.values(row).some(value => value !== undefined && value !== null && value !== '')
+      );
+
+      console.log("Registros después de filtrar:", trabajadores.length);
+
+      // Enviar los datos al backend
+      this.planillasService.actualizarDetallesPlanilla(this.idPlanilla, trabajadores).subscribe({
+          next: () => {
+              Swal.fire({ icon: 'success', title: 'Planilla actualizada', text: 'Los detalles han sido actualizados correctamente.' });
+              this.obtenerDetalles();
+          },
+          error: (err) => {
+              console.error('Error al actualizar detalles:', err);
+              Swal.fire({ icon: 'error', title: 'Error', text: 'Hubo un problema al actualizar los detalles.' });
+          }
+      });
+  };
+
+  reader.readAsBinaryString(this.archivoSeleccionado);
+}
+
+
+
+
+
+
+
+
 
   obtenerInformacionPlanilla() {
     this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
@@ -172,4 +237,71 @@ export class PlanillasAportesDetalleComponent implements OnInit {
       confirmButtonText: 'Ok'
     });
   }
+
+  // eliminar detalles de la planilla --------------------------------------------------------------------------------------
+
+  confirmarEliminacionDetalles() {
+    Swal.fire({
+        title: '¿Eliminar los detalles de la planilla?',
+        text: 'Esta acción no se puede deshacer. ¿Desea continuar?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            this.eliminarDetallesPlanilla();
+        }
+    });
+}
+
+eliminarDetallesPlanilla() {
+    this.planillasService.eliminarDetallesPlanilla(this.idPlanilla).subscribe({
+        next: () => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Detalles eliminados',
+                text: 'Los detalles de la planilla han sido eliminados correctamente.',
+            });
+            this.obtenerDetalles(); // Refrescar la vista para mostrar que los detalles se han eliminado
+        },
+        error: (err) => {
+            console.error('Error al eliminar detalles:', err);
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Hubo un problema al eliminar los detalles.' });
+        }
+    });
+}
+
+
+declararPlanilla() {
+  Swal.fire({
+      title: '¿Declarar la planilla nuevamente?',
+      text: 'Esto enviará la planilla para revisión.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, declarar',
+      cancelButtonText: 'Cancelar'
+  }).then((result) => {
+      if (result.isConfirmed) {
+          this.planillasService.actualizarEstadoPlanilla(this.idPlanilla, 1).subscribe({
+              next: () => {
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'Planilla enviada',
+                      text: 'La planilla ha sido declarada nuevamente.',
+                  });
+                  this.obtenerDetalles();
+              },
+              error: (err) => {
+                  console.error('Error al actualizar estado:', err);
+                  Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo declarar la planilla.' });
+              }
+          });
+      }
+  });
+}
+
+
+
+
 }

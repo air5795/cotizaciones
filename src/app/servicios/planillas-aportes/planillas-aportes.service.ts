@@ -24,6 +24,11 @@ export class PlanillasAportesService {
     });
   }
 
+  actualizarDetallesPlanilla(id_planilla: number, trabajadores: any[]): Observable<any> {
+    return this.http.put(`${environment.url}planillas_aportes/detalles/${id_planilla}`, { trabajadores });
+}
+
+
   getPlanillas(cod_patronal: string): Observable<any> {
     return this.http.get(`${environment.url}planillas_aportes/historial/${cod_patronal}`);
   }
@@ -50,6 +55,11 @@ export class PlanillasAportesService {
     const body = { estado, observaciones };
     return this.http.put(`${environment.url}planillas_aportes/estado/${id_planilla}`, body);
   }
+
+  eliminarDetallesPlanilla(id_planilla: number): Observable<any> {
+    return this.http.delete(`${environment.url}planillas_aportes/detalles/${id_planilla}`);
+  }
+
 
   compararPlanillas(cod_patronal: string, gestion: string, mesAnterior: string, mesActual: string): Observable<any> {
     return this.http.get<any>(`${environment.url}planillas_aportes/comparar/${cod_patronal}/${gestion}/${mesAnterior}/${mesActual}`);
