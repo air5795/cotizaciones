@@ -12,41 +12,7 @@
           </div>
           <div class="header-right">
             <div class="button-container">
-              <!-- <button 
-                  *ngIf="planillaInfo.planilla.estado !== 1"
-                  pButton 
-                  label="Exportar a Excel" 
-                  icon="pi pi-file-excel" 
-                  class="p-button-success" 
-                  (click)="exportarExcel()"
-              ></button> -->
-           
-         <!--      <button
-                  pButton
-                  label="RESUMEN"
-                  class="p-button-info custom-button"
-                  (click)="exportarPdfrResumen()"
-              >
-                  <span class="pi pi-file-pdf custom-icon"></span>
-             
-              </button>
-              <button
-                  pButton
-                  label="BAJAS "
-                  class="p-button-danger custom-button"
-                  (click)="exportarPdf()"
-              >
-                  <span class="pi pi-file-pdf custom-icon"></span>
-             
-              </button>
-              <button
-                  pButton
-                  label="PLANILLA"
-                  class="p-button-success custom-button"
-                  (click)="exportarExcel()"
-              >
-                  <span class="pi pi-file-excel custom-icon"></span>
-              </button> -->
+            
 
               <p-splitButton 
                 label="IMPRIMIR REPORTES"
@@ -214,22 +180,33 @@
   
 
 
-  <p-dialog [(visible)]="displayModal" [style]="{width: '450px'}" header="VALIDAR PLANILLA" [modal]="true" >
-    <div class="p-fluid">
-      <div class="p-field">
-        <label for="estado">Estado</label>
-        <p-dropdown id="estado" [(ngModel)]="estadoSeleccionado" [options]="estados" optionLabel="label" optionValue="value" appendTo="body"></p-dropdown>
+<p-dialog [(visible)]="displayModal" [style]="{width: '450px'}" header="VALIDAR PLANILLA" [modal]="true">
+  <div class="dialog-container">
+
+    <div class="grid">
+      <div class="col-12">
+        <div class="dialog-field" style="width: 100%;">
+          <label for="estado">Estado</label>
+          <p-dropdown id="estado" class="modal-validar full-width" [(ngModel)]="estadoSeleccionado" 
+            [options]="estados" optionLabel="label" optionValue="value" appendTo="body" [style]="{width: '100%'}">">
+          </p-dropdown>
+        </div>
       </div>
-      <div class="p-field" *ngIf="estadoSeleccionado === 3">
-        <label for="observaciones">Observaciones</label>
-        <textarea id="observaciones" [(ngModel)]="observaciones" rows="3"></textarea>
+      <div class="col-12">
+        <div class="dialog-field" *ngIf="estadoSeleccionado === 3" style="width: 100%;">
+          <label for="observaciones">Observaciones</label>
+          <textarea id="observaciones" [(ngModel)]="observaciones" rows="3" class="full-width" style="width: 100%;"></textarea>
+        </div>
       </div>
     </div>
-    <ng-template pTemplate="footer">
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer">
       <p-button label="Cancelar" icon="pi pi-times" (click)="displayModal = false" class="p-button-text"></p-button>
       <p-button label="Guardar" icon="pi pi-check" (click)="guardarEstado()" [disabled]="!estadoSeleccionado"></p-button>
-    </ng-template>
-  </p-dialog>
-
+    </div>
+  </ng-template>
+</p-dialog>
 
 

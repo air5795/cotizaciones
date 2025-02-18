@@ -20,72 +20,168 @@
             <div>
                 <div class="surface-ground px-4 py-4 md:px-6 lg:px-8">
                     <div class="grid">
-                        
-                        <div class="col-12 md:col-6 lg:col-3">
-                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
-                                <div class="mb-3 flex justify-content-center">
-                                    <div class="flex align-items-center justify-content-center bg-orange-100 border-round-lg p-3" style="width:3rem;height:3rem">
-                                        <i class="pi pi-briefcase text-orange-500 text-2xl"></i>
+
+                        <!-- Tarjeta 1: Planillas Pendientes -->
+                        <div class="col-12 md:col-6 lg:col-4">
+                            <div class="surface-card shadow-3 p-4 border-round-lg text-left flex justify-content-between align-items-center">
+                                
+                                <!-- Título -->
+                                <div class="flex flex-column justify-content-start">
+                                    <span class="block text-500 font-medium mb-1">PLANILLAS PENDIENTES</span>
+                                    <p class="text-700 text-sm">N° de planillas que aún están en revision.</p>
+                                </div>
+                    
+                                <!-- Icono y Número -->
+                                <div class="relative">
+                                    <div class="flex align-items-center justify-content-center bg-yellow-100 border-round-lg p-3" style="width:3.5rem;height:3.5rem">
+                                        <i class="pi pi-exclamation-circle text-yellow-500 text-2xl"></i>
+                                    </div>
+                                    <!-- Círculo con número, posicionado fuera del ícono -->
+                                    <div 
+                                    class="absolute top-0 bg-yellow-500 text-white rounded-full w-6 h-6 flex justify-content-center align-items-center text-xs font-bold"
+                                    style="border-radius: 15px;top: -8px !important;font-size: 15px !important; right: -5px;padding: 2px;"
+                                    >
+                                        0
                                     </div>
                                 </div>
-                                <span class="block text-500 font-medium mb-2">NIT</span>
-                                <div class="text-900 font-bold text-2xl"> {{ empresa?.EMP_NIT || '---' }}</div>
+                    
                             </div>
                         </div>
-                        
-                        <div class="col-12 md:col-6 lg:col-3">
-                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
-                              <div class="mb-3 flex justify-content-center">
-                                <div class="flex align-items-center justify-content-center bg-green-100 border-round-lg p-3" style="width:3rem;height:3rem">
-                                  <i class="pi pi-users text-green-500 text-2xl"></i>
+                    
+                        <!-- Tarjeta 2: Planillas Observadas -->
+                        <div class="col-12 md:col-6 lg:col-4">
+                            <div class="surface-card shadow-3 p-4 border-round-lg text-left flex justify-content-between align-items-center">
+                                
+                                <!-- Título -->
+                                <div class="flex flex-column justify-content-start">
+                                    <span class="block text-500 font-medium mb-1">PLANILLAS OBSERVADAS</span>
+                                    <p class="text-700 text-sm">N° de Planillas observadas que requieren tu revisión .</p>
                                 </div>
-                              </div>
-                              <span class="block text-500 font-medium mb-2">TRABAJADORES</span>
-                              <div class="text-900 font-bold text-2xl">
-                                {{ totalTrabajadores || '---' }}
-                              </div>
-                            </div>
-                          </div>
-                          
-                        
-                        <div class="col-12 md:col-6 lg:col-3">
-                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
-                                <div class="mb-3 flex justify-content-center">
-                                    <div class="flex align-items-center justify-content-center bg-cyan-100 border-round-lg p-3" style="width:3rem;height:3rem">
-                                        <i class="pi pi-inbox text-cyan-500 text-2xl"></i>
+                    
+                                <!-- Icono y Número -->
+                                <div class="relative">
+                                    <div class="flex align-items-center justify-content-center bg-pink-100 border-round-lg p-3" style="width:3.5rem;height:3.5rem">
+                                        <i class="pi pi-inbox text-pink-500 text-2xl"></i>
+                                    </div>
+                                    <!-- Círculo con número, posicionado fuera del ícono -->
+                                    <div class="absolute top-0 bg-pink-500 text-white rounded-full w-6 h-6 flex justify-content-center align-items-center text-xs font-bold"
+                                    style="border-radius: 15px;top: -8px !important;font-size: 15px !important; right: -5px;padding: 2px;"
+                                    >
+                                        0
                                     </div>
                                 </div>
-                                <span class="block text-500 font-medium mb-2">OBSERVADOS</span>
-                                <div class="text-900 font-bold text-2xl">0</div>
+                    
                             </div>
                         </div>
-                        
-                        <div class="col-12 md:col-6 lg:col-3">
-                            <div class="surface-card shadow-3 p-2 border-round-lg text-center">
-                                <div class="mb-3 flex justify-content-center">
-                                    <div class="flex align-items-center justify-content-center bg-pink-100 border-round-lg p-3" style="width:3rem;height:3rem">
-                                        <i class="pi pi-upload text-pink-500 text-2xl"></i>
+                    
+                        <!-- Tarjeta 3: Planillas Aprobadas -->
+                        <div class="col-12 md:col-6 lg:col-4">
+                            <div class="surface-card shadow-3 p-4 border-round-lg text-left flex justify-content-between align-items-center">
+                                
+                                <!-- Título -->
+                                <div class="flex flex-column justify-content-start">
+                                    <span class="block text-500 font-medium mb-1">PLANILLAS APROBADAS</span>
+                                    <p class="text-700 text-sm">N° de Planillas aprobadas.</p>
+                                </div>
+                    
+                                <!-- Icono y Número -->
+                                <div class="relative">
+                                    <div class="flex align-items-center justify-content-center bg-green-100 border-round-lg p-3" style="width:3.5rem;height:3.5rem">
+                                        <i class="pi pi-check text-green-500 text-2xl"></i>
+                                    </div>
+                                    <!-- Círculo con número, posicionado fuera del ícono -->
+                                    <div class="absolute top-0  bg-green-500 text-white rounded-full w-6 h-6 flex justify-content-center align-items-center text-xs font-bold"
+                                    style="border-radius: 15px;top: -8px !important;font-size: 15px !important; right: -5px;padding: 2px;"
+                                    >
+                                        0
                                     </div>
                                 </div>
-                                <span class="block text-500 font-medium mb-2">PLANILLAS PENDIENTES</span>
-                                <div class="text-900 font-bold text-2xl">0</div>
+                    
                             </div>
                         </div>
-                        
+                    
                     </div>
+                    
+                    
+                    
+                    
                 </div>
             </div>
 
             <div class="perfil-contenido">
-                <table class="perfil-table">
-                    <tr><th>Representante Legal:</th> <td>{{ empresa?.EMP_LEGAL || '---' }}</td></tr>
-                    <tr><th>Dirección:</th> <td>{{ empresa?.EMP_CALLE || '---' }} # {{ empresa?.EMP_NUM || '---' }}</td></tr>
-                    <tr><th>Teléfono:</th> <td>{{ empresa?.EMP_TELF || '---' }}</td></tr>
-                    <tr><th>NIT:</th> <td>{{ empresa?.EMP_NIT || '---' }}</td></tr>
-                    <tr><th>Zona:</th> <td>{{ empresa?.EMP_ZONA || '---' }}</td></tr>
-                    <tr><th>Actividad Económica:</th> <td>{{ empresa?.EMP_ACTIV || '---' }}</td></tr>
+                <h4 style="background-color: #f8f8f8; color: #357c61; margin: 0; padding: 12px 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                    <i class="pi pi-briefcase" style="margin-right: 10px;"></i> DATOS EMPLEADOR
+                </h4>
+                
+                <table class="perfil-table" style="width: 100%; margin-top: 20px; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                    <tr style="background-color: #f1f1f1; border-bottom: 1px solid #ddd;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-id-card" style="margin-right: 8px;"></i>NIT:
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ empresa?.EMP_NIT || '---' }}
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-users" style="margin-right: 8px;"></i>N° Trabajadores (Afiliados):
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ totalTrabajadores || '---' }}
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f1f1f1; border-bottom: 1px solid #ddd;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-user" style="margin-right: 8px;"></i>Representante Legal:
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ empresa?.EMP_LEGAL || '---' }}
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-home" style="margin-right: 8px;"></i>Dirección:
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ empresa?.EMP_CALLE || '---' }} # {{ empresa?.EMP_NUM || '---' }}
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f1f1f1; border-bottom: 1px solid #ddd;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-phone" style="margin-right: 8px;"></i>Teléfono:
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ empresa?.EMP_TELF || '---' }}
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-id-card" style="margin-right: 8px;"></i>NIT:
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ empresa?.EMP_NIT || '---' }}
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f1f1f1; border-bottom: 1px solid #ddd;">
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-map" style="margin-right: 8px;"></i>Zona:
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ empresa?.EMP_ZONA || '---' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="padding: 12px; text-align: left; font-weight: bold; color: #357c61;">
+                            <i class="pi pi-briefcase" style="margin-right: 8px;"></i>Actividad Económica:
+                        </th> 
+                        <td style="padding: 12px; color: #666; font-size: 14px; border-left: 1px solid #ddd;">
+                            {{ empresa?.EMP_ACTIV || '---' }}
+                        </td>
+                    </tr>
                 </table>
             </div>
+            
+            
         </div>
     </div>
 </div>

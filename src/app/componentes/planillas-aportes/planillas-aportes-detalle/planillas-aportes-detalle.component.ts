@@ -19,7 +19,9 @@ export class PlanillasAportesDetalleComponent implements OnInit {
   planillaInfo: any = {};
 
   mostrarModalImportacion = false;
+  mostrarModalImportar = false;
   archivoSeleccionado: File | null = null;
+
 
 
   regionales = [
@@ -44,13 +46,19 @@ export class PlanillasAportesDetalleComponent implements OnInit {
     this.obtenerInformacionPlanilla(); 
   }
 
-  seleccionarArchivo(event: any) {
-    this.archivoSeleccionado = event.target.files[0];
-    if (this.archivoSeleccionado) {
-        console.log("Archivo seleccionado:", this.archivoSeleccionado.name);
-    }
+// Función para seleccionar el archivo
+seleccionarArchivo(event: any) {
+  this.archivoSeleccionado = event.target.files[0];
 }
 
+// Función para cerrar el modal
+cerrarModalImportar() {
+  this.mostrarModalImportar = false;
+  this.archivoSeleccionado = null;
+}
+
+
+// Función para importar la planilla
 importarNuevaPlanilla() {
   if (!this.archivoSeleccionado) {
       Swal.fire({ icon: 'warning', title: 'Seleccione un archivo', text: 'Debe seleccionar un archivo antes de importar.' });
@@ -74,7 +82,7 @@ importarNuevaPlanilla() {
           return rowData;
       });
 
-      // 🔥 Filtrar filas vacías (deben tener al menos un dato válido)
+      // 🔥 Filtrar filas vacías
       trabajadores = trabajadores.filter(row => 
           Object.values(row).some(value => value !== undefined && value !== null && value !== '')
       );
@@ -85,6 +93,7 @@ importarNuevaPlanilla() {
       this.planillasService.actualizarDetallesPlanilla(this.idPlanilla, trabajadores).subscribe({
           next: () => {
               Swal.fire({ icon: 'success', title: 'Planilla actualizada', text: 'Los detalles han sido actualizados correctamente.' });
+              this.cerrarModalImportar();
               this.obtenerDetalles();
           },
           error: (err) => {
@@ -154,12 +163,14 @@ importarNuevaPlanilla() {
       this.trabajadores[index] = { ...this.trabajadorSeleccionado };
     }
     this.displayModal = false;
+
   }
 
   guardarYEnviar() {
     for (let trabajador of this.trabajadores) {
-      if (!trabajador.ci || !trabajador.apellido_paterno || !trabajador.nombres || 
-          !trabajador.cargo || !trabajador.salario || !trabajador.fecha_ingreso || !trabajador.regional) {
+      /* if (!trabajador.ci || !trabajador.apellido_paterno || !trabajador.nombres || 
+          !trabajador.cargo || !trabajador.salario || !trabajador.fecha_ingreso || !trabajador.regional) { */
+          if (!trabajador.ci ) {
         Swal.fire({
           icon: 'warning',
           title: 'Campos Vacíos',

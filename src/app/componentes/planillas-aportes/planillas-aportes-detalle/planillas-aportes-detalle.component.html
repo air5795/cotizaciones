@@ -11,28 +11,43 @@
         <div class="header-right">
           <div class="button-container">
 
-            <button pButton 
-            label="Eliminar detalles de la Planilla" 
-            class="p-button-danger"
-            (click)="confirmarEliminacionDetalles()">
-      <span class="pi pi-trash"></span>
-    </button>
-    
-    <button pButton 
-    label="Importar nueva Planilla" 
-    class="p-button-success"
-    (click)="importarNuevaPlanilla()" 
-    [disabled]="!archivoSeleccionado">
-<span class="pi pi-upload"></span>
-</button>
-
-
-
-
             
 
+
+
+              <button 
+              *ngIf="planillaInfo.planilla.estado === 3"
+              pButton 
+              label="LIMPIAR PLANILLA" 
+              class="p-button-danger"
+              style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
+              (click)="confirmarEliminacionDetalles()">
+                <span class="pi pi-trash" style="font-size: 2rem; padding-bottom: 10px;"></span>
+              </button>
+
+              <button 
+              *ngIf="planillaInfo.planilla.estado === 3 "
+              pButton 
+              label="CARGAR PLANILLA" 
+              class="p-button-primary"
+              style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
+              (click)="mostrarModalImportar = true"> 
+              <span class="pi pi-upload" style="font-size: 2rem; padding-bottom: 10px;"></span>
+          </button>
+    
+             <!--  <button 
+              *ngIf="planillaInfo.planilla.estado === 3"
+              pButton 
+              label="Importar Planilla" 
+              class="p-button-success"
+              style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
+              (click)="importarNuevaPlanilla()" 
+              [disabled]="!archivoSeleccionado">
+              <span class="pi pi-upload" style="font-size: 2rem; padding-bottom: 10px;"></span>
+              </button> -->
+
             <button
-                *ngIf="planillaInfo.planilla.estado !== 1"
+                *ngIf="planillaInfo.planilla.estado === 2"
                 pButton
                 label="Exportar a Excel" 
                 class="p-button-success"
@@ -40,7 +55,7 @@
                 (click)="exportarExcel()"
                 >
                 <span class="pi pi-file-excel" style="font-size: 2rem; padding-bottom: 10px;"></span>
-                </button>
+            </button>
             
 
             <button
@@ -51,7 +66,7 @@
                 style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; " 
                 (click)="guardarYEnviar()"
                 >
-                <span class="pi pi-upload" style="font-size: 2rem; padding-bottom: 10px;"></span>
+                <span class="pi pi-send" style="font-size: 2rem; padding-bottom: 10px;"></span>
                 </button>
           </div>
         </div>
@@ -173,7 +188,20 @@
 
 
 
-<div class="p-field">
-  <label for="archivo" class="p-d-block font-bold">Seleccionar archivo (Excel) </label>
-  <input type="file" id="archivo" accept=".xlsx, .xls" (change)="seleccionarArchivo($event)" class="p-inputtext">
-</div>
+<p-dialog [(visible)]="mostrarModalImportar" [modal]="true" header="Importar Nueva Planilla" [closable]="true" [style]="{width: '600px'}">
+  <div class="p-field">
+      <label for="archivo" class="p-d-block font-bold">Seleccionar archivo (Excel)</label>
+      <div class="file-upload-container">
+          <input type="file" id="archivo" accept=".xlsx, .xls" (change)="seleccionarArchivo($event)" class="file-upload-input" #fileInput hidden />
+          <button type="button" class="p-button p-button-secondary" (click)="fileInput.click()">
+              <i class="pi pi-upload"></i> Seleccionar Archivo
+          </button>
+      </div>
+      <p *ngIf="archivoSeleccionado" class="p-mt-2"><strong>Archivo seleccionado:</strong> {{ archivoSeleccionado.name }}</p>
+  </div>
+
+  <div class="p-d-flex p-jc-end p-mt-3">
+      <button pButton label="Cancelar" class="p-button-text p-mr-2" (click)="cerrarModalImportar()"></button>
+      <button pButton label="Subir Planilla" class="p-button-success" (click)="importarNuevaPlanilla()" [disabled]="!archivoSeleccionado"></button>
+  </div>
+</p-dialog>

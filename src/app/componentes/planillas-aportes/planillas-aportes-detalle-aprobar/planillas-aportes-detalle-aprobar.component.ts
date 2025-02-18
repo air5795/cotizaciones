@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlanillasAportesService } from '../../../servicios/planillas-aportes/planillas-aportes.service';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
@@ -51,7 +51,10 @@ export class PlanillasAportesDetalleAprobarComponent {
   
     
   
-    constructor(private route: ActivatedRoute, private planillasService: PlanillasAportesService) {
+    constructor(
+      private route: ActivatedRoute, 
+      private planillasService: PlanillasAportesService,
+      private router: Router) {
       this.items = [
         {
           label: 'RESUMEN',
@@ -162,26 +165,42 @@ export class PlanillasAportesDetalleAprobarComponent {
 
 
     guardarEstado() {
-    this.planillasService.actualizarEstadoPlanilla(this.idPlanilla, this.estadoSeleccionado, this.observaciones).subscribe({
-      next: (response) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Estado actualizado',
-          text: response.mensaje,
-          confirmButtonText: 'Ok'
-        });
-        this.displayModal = false;
-      },
-      error: (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo actualizar el estado de la planilla',
-          confirmButtonText: 'Ok'
-        });
-      }
-    });
-  }
+      this.planillasService.actualizarEstadoPlanilla(this.idPlanilla, this.estadoSeleccionado, this.observaciones).subscribe({
+        next: (response) => {
+          this.displayModal = false; // Cierra el modal antes de mostrar la alerta
+          setTimeout(() => { // Espera a que se cierre antes de mostrar la alerta
+            Swal.fire({
+              icon: 'success',
+              title: 'Estado actualizado',
+              text: response.mensaje,
+              confirmButtonText: 'Ok',
+              customClass: {
+                popup: 'swal2-custom-zindex' // Clase personalizada
+              }
+            }).then(() => {
+              this.router.navigate(['cotizaciones/aprobar-planillas-aportes']);
+              
+            });
+          }, 100); // Pequeño delay para evitar solapamientos
+        },
+        error: (err) => {
+          this.displayModal = false;
+          setTimeout(() => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo actualizar el estado de la planilla',
+              confirmButtonText: 'Ok',
+              customClass: {
+                popup: 'swal2-custom-zindex'
+              }
+            });
+          }, 100);
+        }
+      });
+    }
+    
+    
 
   
     exportarExcel() {
