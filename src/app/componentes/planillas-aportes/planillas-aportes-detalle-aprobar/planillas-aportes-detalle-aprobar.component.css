@@ -215,6 +215,20 @@
   :host ::ng-deep .p-datatable-header {
     background-color: #e9e9e9;
   }
+
+  :host ::ng-deep .p-button {
+    border-radius: 0;
+  }
+
+  :host ::ng-deep .p-tieredmenu {
+    width: 100% !important;  /* Ajusta el valor según lo que necesites */
+    max-width: 100% !important;
+}
+
+
+
+
+  
   
   /* Estilo para la tabla */
   .tabla-centrada {

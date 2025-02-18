@@ -174,6 +174,8 @@ steps = [
     }
   }
 
+  
+
   /// 4️⃣ Procesar el archivo Excel y extraer los datos
   procesarArchivo() {
     const reader = new FileReader();

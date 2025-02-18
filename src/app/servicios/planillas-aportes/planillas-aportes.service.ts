@@ -60,6 +60,12 @@ export class PlanillasAportesService {
       responseType: 'blob' 
     });
   }
+
+  generarReporteResumen(id_planilla: number): Observable<Blob> {
+    return this.http.get(`${environment.url}planillas_aportes/reporte-planilla/${id_planilla}`, {
+      responseType: 'blob' 
+    });
+  }
   
   
 

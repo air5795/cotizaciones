@@ -4,7 +4,7 @@
     color: $menuTextColor;
     border: $menuBorder;
     border-radius: $borderRadius;
-    width: $menuWidth;
+    width: 100% !important;
 
     .p-menuitem-link {
         @include menuitem-link();

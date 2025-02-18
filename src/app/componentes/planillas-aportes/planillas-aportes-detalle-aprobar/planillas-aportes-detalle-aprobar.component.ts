@@ -4,6 +4,7 @@ import { PlanillasAportesService } from '../../../servicios/planillas-aportes/pl
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-planillas-aportes-detalle-aprobar',
@@ -21,6 +22,9 @@ export class PlanillasAportesDetalleAprobarComponent {
 
     estadoSeleccionado!: number;
     observaciones!: string;
+    items: MenuItem[];
+
+    
   
     regionales = [
       { label: 'LA PAZ', value: 'LA PAZ' },
@@ -47,7 +51,31 @@ export class PlanillasAportesDetalleAprobarComponent {
   
     
   
-    constructor(private route: ActivatedRoute, private planillasService: PlanillasAportesService) {}
+    constructor(private route: ActivatedRoute, private planillasService: PlanillasAportesService) {
+      this.items = [
+        {
+          label: 'RESUMEN',
+          icon: 'pi pi-file-pdf',
+          command: () => {
+            this.exportarPdfrResumen();
+          }
+        },
+        {
+          label: 'BAJAS DETECTADAS',
+          icon: 'pi pi-file-pdf',
+          command: () => {
+            this.exportarPdf();
+          }
+        },
+        {
+          label: 'PLANILLA DECLARADA',
+          icon: 'pi pi-file-excel',
+          command: () => {
+            this.exportarExcel();
+          }
+        }
+      ];
+    }
   
     ngOnInit(): void {
       this.idPlanilla = Number(this.route.snapshot.paramMap.get('id'));
@@ -58,27 +86,46 @@ export class PlanillasAportesDetalleAprobarComponent {
     obtenerMesAnterior(mesActual: string): string | null {
       const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
       const index = meses.indexOf(mesActual.toUpperCase());
-      return index > 0 ? meses[index - 1] : null;
+    
+      console.log(`Mes actual recibido: ${mesActual}`);
+      console.log(`Índice del mes en la lista: ${index}`);
+    
+      // Si el mes es enero, devolver diciembre, en caso contrario, devolver el mes anterior
+      const mesAnterior = index > 0 ? meses[index - 1] : "DICIEMBRE";
+      console.log(`Mes anterior calculado: ${mesAnterior}`);
+    
+      return mesAnterior;
     }
+    
+    
 
     obtenerComparacionPlanillas() {
       if (!this.planillaInfo.planilla) return;
-  
+    
       const { cod_patronal, gestion, mes } = this.planillaInfo.planilla;
+      console.log(`Datos obtenidos: cod_patronal=${cod_patronal}, gestion=${gestion}, mes=${mes}`);
+    
       const mesAnterior = this.obtenerMesAnterior(mes);
-  
-      if (!mesAnterior) return;
-  
+    
+      if (!mesAnterior) {
+        console.warn("El mes anterior no fue calculado correctamente.");
+        return;
+      }
+    
+      console.log(`Llamando a compararPlanillas con mesAnterior=${mesAnterior}, mesActual=${mes}`);
+    
       this.planillasService.compararPlanillas(cod_patronal, gestion, mesAnterior, mes).subscribe({
         next: (data) => {
+          console.log("Respuesta del backend:", data);
           this.altas = data.altas;
           this.bajas = data.bajas;
         },
         error: (err) => {
-          console.error('Error al comparar planillas:', err);
+          console.error("Error al comparar planillas:", err);
         }
       });
     }
+    
   
     obtenerInformacionPlanilla() {
       this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
@@ -226,6 +273,58 @@ export class PlanillasAportesDetalleAprobarComponent {
             icon: 'error',
             title: 'Error',
             text: 'No se pudo generar el reporte de bajas.',
+            confirmButtonText: 'Ok'
+          });
+        }
+      });
+    }
+    
+    exportarPdfrResumen() {
+      if (!this.idPlanilla) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No hay datos',
+          text: 'No se ha cargado el ID de la planilla.',
+          confirmButtonText: 'Ok'
+        });
+        return;
+      }
+    
+      this.planillasService.generarReporteResumen(this.idPlanilla).subscribe({
+        next: (data: Blob) => {
+          const fileURL = URL.createObjectURL(data);
+          const ventanaEmergente = window.open("", "VistaPreviaPDF", "width=900,height=600,scrollbars=no,resizable=no");
+    
+          if (ventanaEmergente) {
+            ventanaEmergente.document.write(`
+              <html>
+                <head>
+                  <title>Vista Previa del PDF</title>
+                  <style>
+                    body { margin: 0; text-align: center; }
+                    iframe { width: 100%; height: 100vh; border: none; }
+                  </style>
+                </head>
+                <body>
+                  <iframe src="${fileURL}"></iframe>
+                </body>
+              </html>
+            `);
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo abrir la vista previa del PDF. Es posible que el navegador haya bloqueado la ventana emergente.',
+              confirmButtonText: 'Ok'
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Error al generar el reporte resumen:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo generar el reporte resumen.',
             confirmButtonText: 'Ok'
           });
         }

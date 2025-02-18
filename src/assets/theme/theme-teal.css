@@ -5718,7 +5718,7 @@ p-treeselect.p-treeselect-clearable .p-treeselect-clear-icon {
   color: rgb(0, 0, 1);
   border: 1px solid #e5e5e5;
   border-radius: 4px;
-  width: 12.5rem;
+/*   width: 12.5rem; */
 }
 .p-tieredmenu .p-menuitem-link {
   padding: 1rem 1rem;
