@@ -128,6 +128,7 @@ import { PlanillasAportesListComponent } from './componentes/planillas-aportes/p
 import { PlanillasAportesDetalleComponent } from './componentes/planillas-aportes/planillas-aportes-detalle/planillas-aportes-detalle.component';
 import { PlanillasAportesAprobarComponent } from './componentes/planillas-aportes/planillas-aportes-aprobar/planillas-aportes-aprobar.component';
 import { PlanillasAportesDetalleAprobarComponent } from './componentes/planillas-aportes/planillas-aportes-detalle-aprobar/planillas-aportes-detalle-aprobar.component';
+import { HistorialAportesComponent } from './componentes/planillas-aportes/historial-aportes/historial-aportes.component';
 
 
 @NgModule({
@@ -250,6 +251,7 @@ import { PlanillasAportesDetalleAprobarComponent } from './componentes/planillas
     PlanillasAportesDetalleComponent,
     PlanillasAportesAprobarComponent,
     PlanillasAportesDetalleAprobarComponent,
+    HistorialAportesComponent,
   ],
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, CountryService, CustomerService, EventService, IconService, NodeService,
     PhotoService, ProductService, MenuService , MessageService],

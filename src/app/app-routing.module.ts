@@ -20,6 +20,7 @@ import { PlanillasAportesListComponent } from './componentes/planillas-aportes/p
 import { PlanillasAportesDetalleComponent } from './componentes/planillas-aportes/planillas-aportes-detalle/planillas-aportes-detalle.component';
 import { PlanillasAportesAprobarComponent } from './componentes/planillas-aportes/planillas-aportes-aprobar/planillas-aportes-aprobar.component';
 import { PlanillasAportesDetalleAprobarComponent } from './componentes/planillas-aportes/planillas-aportes-detalle-aprobar/planillas-aportes-detalle-aprobar.component';
+import { HistorialAportesComponent } from './componentes/planillas-aportes/historial-aportes/historial-aportes.component';
 @NgModule({
     imports: [
         RouterModule.forRoot([
@@ -34,6 +35,7 @@ import { PlanillasAportesDetalleAprobarComponent } from './componentes/planillas
                     { path: 'planillas-aportes/:id', component: PlanillasAportesDetalleComponent },
                     { path: 'aprobar-planillas-aportes', component: PlanillasAportesAprobarComponent },
                     { path: 'aprobar-planillas-aportes/:id', component: PlanillasAportesDetalleAprobarComponent },
+                    { path: 'historial-aportes', component: HistorialAportesComponent },
                     // OTROS -----------------------------------------------------------------------------
                     { path: 'sistemas', component: SistemaComponent },
                     { path: 'clasificadores', component: ClasificadorComponent },

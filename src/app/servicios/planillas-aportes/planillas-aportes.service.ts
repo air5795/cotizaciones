@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -76,6 +76,21 @@ export class PlanillasAportesService {
       responseType: 'blob' 
     });
   }
+
+  getPlanillasTodoHistorial(pagina: number = 0, limite: number = 10, busqueda: string = ''): Observable<any> {
+    let params = new HttpParams()
+      .set('pagina', pagina)  
+      .set('limite', limite);
+  
+    if (busqueda) {
+      params = params.set('busqueda', busqueda);
+    }
+  
+    console.log('Parámetros de la solicitud:', params.toString());
+  
+    return this.http.get(`${environment.url}planillas_aportes/historial-completo`, { params });
+  }
+  
   
   
 

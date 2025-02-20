@@ -17,6 +17,7 @@ export class PlanillasAportesDetalleComponent implements OnInit {
   displayModal = false;
   trabajadorSeleccionado: any = {};
   planillaInfo: any = {};
+  
 
   mostrarModalImportacion = false;
   mostrarModalImportar = false;
@@ -130,16 +131,16 @@ importarNuevaPlanilla() {
 
   obtenerDetalles() {
     this.planillasService.getPlanillaDetalle(this.idPlanilla).subscribe({
-      next: (data) => {
-        this.trabajadores = data.trabajadores;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error al obtener detalles:', err);
-        this.loading = false;
-      }
+        next: (data) => {
+            this.trabajadores = data.trabajadores || []; // Asegúrate de que siempre sea un arreglo
+            this.loading = false;
+        },
+        error: (err) => {
+            console.error('Error al obtener detalles:', err);
+            this.loading = false;
+        }
     });
-  }
+}
 
   getFondoEstado(estado: number): string {
     switch (estado) {
@@ -267,20 +268,23 @@ importarNuevaPlanilla() {
 }
 
 eliminarDetallesPlanilla() {
-    this.planillasService.eliminarDetallesPlanilla(this.idPlanilla).subscribe({
-        next: () => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Detalles eliminados',
-                text: 'Los detalles de la planilla han sido eliminados correctamente.',
-            });
-            this.obtenerDetalles(); // Refrescar la vista para mostrar que los detalles se han eliminado
-        },
-        error: (err) => {
-            console.error('Error al eliminar detalles:', err);
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Hubo un problema al eliminar los detalles.' });
-        }
-    });
+  this.planillasService.eliminarDetallesPlanilla(this.idPlanilla).subscribe({
+      next: () => {
+          Swal.fire({
+              icon: 'success',
+              title: 'Detalles eliminados',
+              text: 'Los detalles de la planilla han sido eliminados correctamente.',
+          });
+          // Vaciar la lista de trabajadores manualmente
+          this.trabajadores = [];
+          this.loading = false; // Asegúrate de que el loading se desactive
+      },
+      error: (err) => {
+          console.error('Error al eliminar detalles:', err);
+          Swal.fire({ icon: 'error', title: 'Error', text: 'Hubo un problema al eliminar los detalles.' });
+          this.loading = false; // Asegúrate de que el loading se desactive en caso de error
+      }
+  });
 }
 
 
@@ -313,6 +317,58 @@ declararPlanilla() {
 }
 
 
+// reporte de resumen de planilla declara -------------------------------------------------------------------------------------------
 
+exportarPdfrResumen() {
+      if (!this.idPlanilla) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No hay datos',
+          text: 'No se ha cargado el ID de la planilla.',
+          confirmButtonText: 'Ok'
+        });
+        return;
+      }
+    
+      this.planillasService.generarReporteResumen(this.idPlanilla).subscribe({
+        next: (data: Blob) => {
+          const fileURL = URL.createObjectURL(data);
+          const ventanaEmergente = window.open("", "VistaPreviaPDF", "width=900,height=600,scrollbars=no,resizable=no");
+    
+          if (ventanaEmergente) {
+            ventanaEmergente.document.write(`
+              <html>
+                <head>
+                  <title>Vista Previa del PDF</title>
+                  <style>
+                    body { margin: 0; text-align: center; }
+                    iframe { width: 100%; height: 100vh; border: none; }
+                  </style>
+                </head>
+                <body>
+                  <iframe src="${fileURL}"></iframe>
+                </body>
+              </html>
+            `);
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo abrir la vista previa del PDF. Es posible que el navegador haya bloqueado la ventana emergente.',
+              confirmButtonText: 'Ok'
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Error al generar el reporte resumen:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo generar el reporte resumen.',
+            confirmButtonText: 'Ok'
+          });
+        }
+      });
+    }
 
 }

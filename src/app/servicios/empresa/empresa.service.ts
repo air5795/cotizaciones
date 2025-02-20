@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class EmpresaService {
 
-  private apiUrl = 'http://localhost:4000/api/v1/servicios-externos';
+  private apiUrl = 'http://10.0.0.152:4000/api/v1/servicios-externos';
 
   constructor(private http: HttpClient) {}
 
