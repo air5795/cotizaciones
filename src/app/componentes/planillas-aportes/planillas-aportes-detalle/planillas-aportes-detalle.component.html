@@ -1,32 +1,77 @@
 <div class="grid dashboard">
   <div class="col-12 md:col-12 lg:6">
     <div class="perfil-empleador">
-      <div class="header">
+      <div class="cabezera-planilla">
         <div class="header-left">
-          <h2 style="font-size: 25px;"><i class="pi pi-book" style="font-size: 2rem; margin-right: 10px;"></i>PLANILLA N°  {{ planillaInfo.planilla.com_nro }} - {{ planillaInfo.planilla.empresa }}</h2>
-          <div style="background-color: #038377; padding: 11px; border-radius: 10px;">
-            <table style="width: 100%; ">
-              <tr>  
-                <td style="font-size: 16px; font-weight: 600; color: #e2e2e2; width: 15%; ">GESTION:</td>
-                <td style="font-size: 16px; color: white;border-bottom: 1px solid #ffffff54;text-align: center; ">{{ planillaInfo.planilla.gestion }}</td>
-                <td style="width: 10%;"></td>
-                <td style="font-size: 16px; font-weight: 600; color: #e2e2e2; width: 35%; ">N° DE TRABAJADORES:</td>
-                <td style="font-size: 16px; color: white;border-bottom: 1px solid #ffffff54;text-align: center; ">{{ planillaInfo.planilla.total_trabaj }}</td>
-                
-              </tr>
-              
-              <tr>
-                <td style="font-size: 16px; font-weight: 600; color: #e2e2e2;   ">MES:</td>
-                <td style="font-size: 16px; color: white; border-bottom: 1px solid #ffffff54;text-align: center; ">{{ planillaInfo.planilla.mes }}</td>
-                <td style="width: 10%;"></td>
-                <td style="font-size: 16px; font-weight: 600; color: #e2e2e2; ">TOTAL IMPORTE:</td>
-                <td style="font-size: 16px; color: white; border-bottom: 1px solid #ffffff54;text-align: center; ">{{ planillaInfo.planilla.total_importe }} Bs</td>
-              </tr>
-            </table>
+          <h2 style="font-size: 18px; display: flex; align-items: center; font-family: 'Roboto', sans-serif; margin: 5px 0 5px;">
+            <span style="background-color: #009688; color: white; padding: 6px 10px; border-radius: 4px 0 0 4px; display: flex; align-items: center;">
+              <i class="pi pi-book" style="font-size: 1.2rem; margin-right: 6px; color: white;"></i>
+              Planilla N° {{ planillaInfo.planilla.com_nro }}
+            </span>
+            <span style="background-color: #03665d; color: white; padding: 6px 10px; border-radius: 0 4px 4px 0;">
+              {{ planillaInfo.planilla.empresa }}
+            </span>
+          </h2>
+          
+          
+          <hr style="border: 1px solid #949494; margin: 10px 0;">
+        
+          <div class="list-container">
+            <!-- Estado de Planilla -->
+            <div [ngSwitch]="planillaInfo.planilla.estado" class="list-item" 
+              [ngStyle]="{'background-color': getFondoEstado(planillaInfo.planilla.estado)}">
+            <div class="estado-container" *ngSwitchCase="1">
+              <span class="label">ESTADO</span>
+              <span class="value" [ngStyle]="{'color': getColorEstado(planillaInfo.planilla.estado)}">
+                PLANILLA PRESENTADA <i class="pi pi-send"></i>
+              </span>
+            </div>
+            <div class="estado-container" *ngSwitchCase="2">
+              <span class="label">ESTADO</span>
+              <span class="value" [ngStyle]="{'color': getColorEstado(planillaInfo.planilla.estado)}">
+                PLANILLA APROBADA <i class="pi pi-check"></i>
+              </span>
+            </div>
+            <div class="estado-container" *ngSwitchCase="3">
+              <span class="label">ESTADO</span>
+              <span class="value" [ngStyle]="{'color': getColorEstado(planillaInfo.planilla.estado)}">
+                PLANILLA OBSERVADA <i class="pi pi-exclamation-triangle"></i>
+              </span>
+            </div>
           </div>
           
+            <!-- Gestión -->
+            <div class="list-item">
+              <span class="label">Gestión</span>
+              <span class="value">
+                <i class="pi pi-calendar"></i> {{ planillaInfo.planilla.gestion }}
+              </span>
+            </div>
           
-
+            <!-- Mes -->
+            <div class="list-item">
+              <span class="label">Mes</span>
+              <span class="value">
+                <i class="pi pi-calendar"></i> {{ planillaInfo.planilla.mes }}
+              </span>
+            </div>
+          
+            <!-- N° de Trabajadores -->
+            <div class="list-item">
+              <span class="label">N° de Registros</span>
+              <span class="value">
+                <i class="pi pi-users"></i> {{ planillaInfo.planilla.total_trabaj }}
+              </span>
+            </div>
+          
+            <!-- Total Importe -->
+            <div class="list-item">
+              <span class="label">Total Importe</span>
+              <span class="value">
+                <i class="pi pi-money-bill"></i> {{ planillaInfo.planilla.total_importe | number:'1.2-2' }} Bs
+              </span>
+            </div>
+          </div>
         </div>
         <div class="header-right">
           <div class="button-container">
@@ -106,77 +151,419 @@
           </div>
         </div>
       </div>
-      <div [ngSwitch]="planillaInfo.planilla.estado" [ngStyle]="{'background-color': getFondoEstado(planillaInfo.planilla.estado)}" style="padding: 20px;">
-        <div *ngSwitchCase="3" >
+      <div [ngSwitch]="planillaInfo.planilla.estado" [ngStyle]="{'background-color': getFondoEstado(planillaInfo.planilla.estado)}" >
+        <div *ngSwitchCase="3" style="padding: 20px;">
 
-          <a class="btn btn-info" href="" style="background-color: #d15a5a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
-            <i class="pi pi-exclamation-triangle"></i> 
-            Planilla Observada
-          </a>
        
           <span style="color: aliceblue;background-color: #f7f7f7;color: red;padding: 9px;border-radius: 8px;"> 
             <strong style="color: #b00020;"> OBSERVACIÓN: </strong> <span style="color: rgb(73, 73, 73); margin-left: 15px;"> {{ planillaInfo.planilla.observaciones || 'Ninguna' }}</span>
           </span>
         </div>
-        <div *ngSwitchCase="2" >
-          <a class="btn btn-info" href="" style="background-color: #5ad15a;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
-            <i class="pi pi-check"></i> 
-            PLANILLA APROBADA
-          </a>
-        </div>
-        <div *ngSwitchDefault >
-          <a class="btn btn-info" href="" style="background-color: #77a1cb;color: #ffffff;border-radius: 7px;padding: 10px;margin-right: 10px;">
-            <i class="pi pi-eye"></i> 
-            <strong> PLANILLA ENVIADA : </strong> EN ESPERA DE APROBACIÓN 
-          </a>
-        </div>
+    
       </div>
     </div>
   </div>
 </div>
 
-<p-table
-  [value]="trabajadores"
-  [paginator]="true"
-  [rows]="20"
-  [loading]="loading"
-  responsiveLayout="scroll"
->
+<p-tabView [style]="{ padding: '5px' , 'border': '1px solid gray'}">
+  <p-tabPanel header="Planilla Declarada Mensual" leftIcon="pi pi-file" >
+    
+    <p-table
+    [value]="trabajadores"
+    [paginator]="true"
+    [rows]="limite"
+    [totalRecords]="total"
+    [loading]="loading"
+    [rowsPerPageOptions]="[5, 10, 15, 20 , -1]"
+    [pageLinks]="5"
+    [lazy]="true"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-sm p-datatable-striped"
+    [style]="{'font-size': '12px', 'border': '1px solid #dee2e6'}"
+    (onPage)="onPageChange($event)"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando registros del {first} al {last} de un total de {totalRecords} registros"
+  >
+  <ng-template pTemplate="caption">
+    <div class="flex justify-content-between flex-column sm:flex-row">
+        <div class="flex align-items-center">
+          
+            <button pButton style="border: 1px;" label="Recargar" class="p-button-outlined p-button-plain mr-2" icon="pi pi-filter-slash" (click)="recargar()"></button>
+           <!--  <button pButton style="border: 1px;" label="Exportar a Excel" class="p-button-outlined p-button-plain" icon="pi pi-file-excel" (click)="recargar()"></button> -->
+        </div>
+        <span class="p-input-icon-left mb-2">
+            <i class="pi pi-search"></i>							
+            <input pInputText type="text" #filter (input)="buscar(filter.value)" placeholder="Buscar ..." class="w-full">
+        </span>
+    </div>
+</ng-template>
   <ng-template pTemplate="header">
-    <tr>
-      <th>Nro</th>
-      <th>CI</th>
-      <th>Nombre Completo</th>
-      <th>Cargo</th>
-      <th>Salario</th>
-      <th>Fecha de Ingreso</th>
-      <th>Fecha de Retiro</th>
-      <th>Regional</th>
-      <th *ngIf="planillaInfo.planilla.estado === 3">Acciones</th>
+    <tr style="background-color: #f8f9fa;">
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nro en Planilla</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">CI</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nombre Completo</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Cargo</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Haber Basico</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Salario Total</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Ingreso</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Retiro</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Regional</th>
+      <th *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Acciones</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-trabajador let-i="rowIndex">
     <tr>
-      <td>{{ trabajador.nro }}</td>
-      <td>{{ trabajador.ci }}</td>
-      <td>{{ trabajador.apellido_paterno }} {{ trabajador.nombres }}</td>
-      <td>{{ trabajador.cargo }}</td>
-      <td>{{ trabajador.salario }}</td>
-      <td>{{ trabajador.fecha_ingreso }}</td>
-      <td>{{ trabajador.fecha_retiro }}</td>
-      <td>{{ trabajador.regional }}</td>
-      <td *ngIf="planillaInfo.planilla.estado === 3">
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.nro }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.ci }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.cargo }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.haber_basico | number:'1.2-2' }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.salario | number:'1.2-2' }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_ingreso }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_retiro }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.regional }}</td>
+      <td *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">
         <button
           pButton
           icon="pi pi-pencil"
           (click)="editarTrabajador(trabajador)"
           class="p-button-warning p-button-sm"
-          style="width: 100%; height: 25px;"
+          style="width: 25px; height: 25px; padding: 0;"
         ></button>
       </td>
     </tr>
   </ng-template>
 </p-table>
+  </p-tabPanel>
+  <p-tabPanel header="Resumen" leftIcon="pi pi-eye" >
+    <div style="display: flex; align-items: center; justify-content: space-between;  background-color: #e3e3e3; padding: 5px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="pi pi-calculator" style="color: #032f53; font-size: 1.5rem;"></i>
+        <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Resumen Planilla</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button pButton style="border: 1px;" label="Exportar a PDF" class="p-button-outlined p-button-plain" icon="pi pi-file-pdf" (click)="recargar()"></button>
+        <button pButton style="border: 1px;" label="Recargar" class="p-button-outlined p-button-plain" icon="pi pi-refresh" (click)="obtenerResumenPlanilla()"></button>
+      </div>
+    </div>
+<div style="padding: 1.5rem; margin-bottom: 2rem; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+  <div style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: stretch;">
+    <div class="flex-4" style="min-width: 300px;">
+      <p-card header="Información de la Planilla" [styleClass]="'shadow-3 border-1 border-gray-200 custom-card'" >
+        <div *ngIf="resumenData?.planilla" class="custom-table">
+          <table class="p-datatable p-datatable-striped w-full">
+            <tbody>
+              <tr>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200 ">Empleador</td>
+                <td class="p-3 border-bottom-1 border-gray-200 text-gray-700">{{ resumenData.planilla.empresa }}</td>
+              </tr>
+              <tr class="surface-ground">
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Importe</td>
+                <td class="p-3 border-bottom-1 border-gray-200 text-gray-700">{{ resumenData.planilla.total_importe | number:'1.2-2' }} Bs </td>
+              </tr>
+              <tr>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Registros</td>
+                <td class="p-3 border-bottom-1 border-gray-200 text-gray-700">{{ resumenData.planilla.total_trabaj }}</td>
+              </tr>
+              <tr class="surface-ground">
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Altas</td>
+                <td class="p-3 border-bottom-1 border-gray-200 text-green-400">{{ altas.length }}</td>
+              </tr>
+              <tr >
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Bajas por Retiro en mes actual</td>
+                <td class="p-3 border-bottom-1 border-gray-200 text-pink-400">{{ bajasPorRetiro.length }}</td>
+              </tr>
+              <tr class="surface-ground" *ngIf="bajasNoEncontradas.length > 0">
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Trabajador no encontrado en el mes actual</td>
+                <td class="p-3 border-bottom-1 border-gray-200 text-pink-400">{{ bajasNoEncontradas.length }} (Verificar)</td>
+              </tr>
+            
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="!resumenData?.planilla" class="text-center text-gray-500 font-italic p-4 surface-50 border-round">
+          No hay datos de la planilla disponibles.
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Sección derecha: Tabla de resumen -->
+    <div style="flex: 2; min-width: 400px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; overflow: hidden;">
+      <p-table 
+        [value]="resumenData?.resumen" 
+        [loading]="resumenLoading" 
+        [rowHover]="true" 
+        styleClass="p-datatable-striped p-datatable-gridlines" 
+        responsiveLayout="scroll"
+        [style]="{'margin-bottom': '0', 'border-radius': '8px'}"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: left;">Regional</th>
+            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: right;">Cantidad</th>
+            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: right;">Total Ganado</th>
+            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: right;">10% del Total</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-region>
+          <tr>
+            <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb;">{{ region.regional }}</td>
+            <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.cantidad }}</td>
+            <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.total_ganado }}</td>
+            <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.porcentaje_10 }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr *ngIf="resumenData?.totales" style="background-color: #d2ffd4; font-weight: 600; color: #1f2a44;">
+            <td style="padding: 1rem; border-top: 2px solid #e5e7eb;">Totales</td>
+            <td style="padding: 1rem; border-top: 2px solid #e5e7eb; text-align: right;">{{ resumenData.totales.cantidad_total }}</td>
+            <td style="padding: 1rem; border-top: 2px solid #e5e7eb; text-align: right;">{{ resumenData.totales.total_ganado }}</td>
+            <td style="padding: 1rem; border-top: 2px solid #e5e7eb; text-align: right;">{{ resumenData.totales.porcentaje_10 }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" style="padding: 1.5rem; text-align: center; color: #6b7280; font-style: italic; background-color: #f9fafb;">No hay datos para mostrar.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+</div>
+  </p-tabPanel>
+  <p-tabPanel header="Bajas" leftIcon="pi pi-arrow-down">
+<!--  Bajas por Fecha de Retiro -->
+<div style="display: flex; align-items: center; justify-content: space-between;  background-color: #e3e3e3; padding: 5px;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <i class="pi pi-angle-double-down" style="color: #e45b5b; font-size: 1.5rem;"></i>
+    <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Bajas por fecha de retiro en el mes actual</span>
+  </div>
+  <button pButton type="button" class="p-button p-button-sm" style="display: flex; align-items: center; gap: 15px; padding: 5px 10px; font-size: large; background-color: #7d0000;">
+    <i class="pi pi-users"></i> <span>{{ bajasPorRetiro.length }}</span>
+  </button>
+</div>
+<p-table
+  [value]="bajasPorRetiro"
+  [paginator]="true"
+  [rows]="5"
+  [totalRecords]="bajasPorRetiro.length"
+  [rowsPerPageOptions]="[5, 10, 15, 20]"
+  [pageLinks]="5"
+  responsiveLayout="scroll"
+  styleClass="p-datatable-sm p-datatable-striped"
+  [style]="{'font-size': '12px', 'border': '1px solid #dee2e6'}"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Mostrando registros del {first} al {last} de un total de {totalRecords} registros"
+>
+
+
+
+  <ng-template pTemplate="header">
+    <tr style="background-color: #f8f9fa;">
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nro en Planilla</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">CI</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nombre Completo</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Cargo</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Haber Basico</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Salario Total</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Ingreso</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Retiro</th>
+      <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Regional</th>
+      <th *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-trabajador let-i="rowIndex">
+    <tr style="background-color: #ffeded;">
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.nro }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.ci }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.cargo }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.haber_basico | number:'1.2-2' }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.salario | number:'1.2-2' }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_ingreso }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_retiro }}</td>
+      <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.regional }}</td>
+      <td *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">
+        <button
+          pButton
+          icon="pi pi-pencil"
+          (click)="editarTrabajador(trabajador)"
+          class="p-button-warning p-button-sm"
+          style="width: 25px; height: 25px; padding: 0;"
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="10" style="text-align: center; padding: 8px;">
+        <strong>No hay bajas por fecha de retiro.</strong>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- trabajdor no encontrado en el mes actual  -->
+<div style="display: flex; align-items: center; justify-content: space-between; background-color: #e3e3e3; padding: 5px;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <i class="pi pi-angle-double-down" style="color: #e49d5b; font-size: 1.5rem;"></i>
+    <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Trabajador no encontrado en el mes actual</span>
+  </div>
+  <button pButton type="button" class="p-button p-button-sm" style="display: flex; align-items: center; gap: 15px; padding: 5px 10px; font-size: large; background-color: #7d4b00;">
+    <i class="pi pi-users"></i> <span>{{ bajasNoEncontradas.length }}</span>
+  </button>
+</div>
+
+<p-table
+[value]="bajasNoEncontradas"
+[paginator]="true"
+[rows]="5"
+[totalRecords]="bajasNoEncontradas.length"
+[rowsPerPageOptions]="[5, 10, 15, 20]"
+[pageLinks]="5"
+responsiveLayout="scroll"
+styleClass="p-datatable-sm p-datatable-striped"
+[style]="{'font-size': '12px', 'border': '1px solid #dee2e6'}"
+[showCurrentPageReport]="true"
+currentPageReportTemplate="Mostrando registros del {first} al {last} de un total de {totalRecords} registros"
+>
+
+
+<!-- Encabezado -->
+<ng-template pTemplate="header">
+<tr style="background-color: #f8f9fa;">
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nro en Planilla</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">CI</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nombre Completo</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Cargo</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Haber Basico</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Salario Total</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Ingreso</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Retiro</th>
+  <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Regional</th>
+  <th *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Acciones</th>
+</tr>
+</ng-template>
+<ng-template pTemplate="body" let-trabajador let-i="rowIndex">
+<tr style="background-color: #fff4ed;">
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.nro }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.ci }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.cargo }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.haber_basico | number:'1.2-2' }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.salario | number:'1.2-2' }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_ingreso }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_retiro }}</td>
+  <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.regional }}</td>
+  <td *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">
+    <button
+      pButton
+      icon="pi pi-pencil"
+      (click)="editarTrabajador(trabajador)"
+      class="p-button-warning p-button-sm"
+      style="width: 25px; height: 25px; padding: 0;"
+    ></button>
+  </td>
+</tr>
+</ng-template>
+
+<!-- Mensaje cuando no hay datos -->
+<ng-template pTemplate="emptymessage">
+<tr>
+  <td colspan="10" style="text-align: center; padding: 8px;">
+    <strong>No hay datos encontrados.</strong>
+  </td>
+</tr>
+</ng-template>
+</p-table>
+
+  </p-tabPanel>
+  <p-tabPanel header="Altas" leftIcon="pi pi-arrow-up">
+
+    <div style="display: flex; align-items: center; justify-content: space-between;  background-color: #e3e3e3; padding: 5px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="pi pi-angle-double-up" style="color: #5be479; font-size: 1.5rem;"></i>
+        <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Personal Nuevo</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button pButton style="border: 1px;" label="Exportar a Excel" class="p-button-outlined p-button-plain" icon="pi pi-file-excel" (click)="recargar()"></button>
+        <button pButton style="border: 1px;" label="Exportar a Pdf" class="p-button-outlined p-button-plain" icon="pi pi-file-pdf" (click)="recargar()"></button>
+        <button pButton type="button" class="p-button p-button-sm" style="display: flex; align-items: center; gap: 15px; padding: 7px 10px; font-size: large; background-color: #007d00;">
+          <i class="pi pi-users"></i> <span>{{ altas.length }}</span>
+        </button>
+        
+      </div>
+    </div>
+
+        <p-table
+          [value]="altas"
+          [paginator]="true"
+          [rows]="15"
+          [totalRecords]="altas.length"
+          [rowsPerPageOptions]="[5, 10, 15, 20]"
+          [pageLinks]="5"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm p-datatable-striped"
+          [style]="{'font-size': '12px', 'border': '1px solid #dee2e6'}"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando registros del {first} al {last} de un total de {totalRecords} registros"
+        >
+
+    
+           <!-- Encabezado -->
+           <ng-template pTemplate="header">
+            <tr style="background-color: #f8faf8;">
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nro</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">CI</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Nombre Completo</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Cargo</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Haber Basico</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Salario Total</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Ingreso</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Fecha de Retiro</th>
+              <th style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Regional</th>
+              <th *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">Acciones</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-trabajador let-i="rowIndex">
+            <tr style="background-color: #e6ffe6;">
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.nro }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.ci }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.cargo }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.haber_basico | number:'1.2-2' }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.salario | number:'1.2-2' }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_ingreso }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.fecha_retiro }}</td>
+              <td style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">{{ trabajador.regional }}</td>
+              <td *ngIf="planillaInfo.planilla.estado === 3" style="text-align: center; padding: 5px; border: 1px solid #dee2e6;">
+                <button
+                  pButton
+                  icon="pi pi-pencil"
+                  (click)="editarTrabajador(trabajador)"
+                  class="p-button-warning p-button-sm"
+                  style="width: 25px; height: 25px; padding: 0;"
+                ></button>
+              </td>
+            </tr>
+          </ng-template>
+    
+          <!-- Mensaje cuando no hay datos -->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 8px;">
+                <strong>No hay nuevas altas en esta planilla.</strong>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+    </p-tabPanel>
+</p-tabView>
+
+
 
 <p-dialog [(visible)]="displayModal" [modal]="true" [style]="{ width: '50vw' }">
   <ng-template pTemplate="header">

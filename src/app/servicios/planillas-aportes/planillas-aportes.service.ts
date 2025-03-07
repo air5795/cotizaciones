@@ -26,24 +26,59 @@ export class PlanillasAportesService {
 
   actualizarDetallesPlanilla(id_planilla: number, trabajadores: any[]): Observable<any> {
     return this.http.put(`${environment.url}planillas_aportes/detalles/${id_planilla}`, { trabajadores });
-}
+  }
 
+  getPlanillas(cod_patronal: string , pagina: number = 0, limite: number = 10, busqueda: string = '' , mes?:string, anio?:string): Observable<any> {
 
-  getPlanillas(cod_patronal: string): Observable<any> {
-    return this.http.get(`${environment.url}planillas_aportes/historial/${cod_patronal}`);
+    let params = new HttpParams()
+      .set('pagina', pagina)
+      .set('limite', limite);
+    
+    if (busqueda) {
+      params = params.set('busqueda', busqueda);
+    }
+    if (mes) {
+      params = params.set('mes', mes);
+    }
+
+    if (anio) {
+      params = params.set('anio', anio);
+    }
+
+    console.log('Parámetros de la solicitud:', params.toString());
+    return this.http.get(`${environment.url}planillas_aportes/historial/${cod_patronal}`, { params });
+  }
+
+  getPlanillasTodoHistorial(pagina: number = 0, limite: number = 10, busqueda: string = ''): Observable<any> {
+    let params = new HttpParams()
+      .set('pagina', pagina)  
+      .set('limite', limite);
+  
+    if (busqueda) {
+      params = params.set('busqueda', busqueda);
+    }
+  
+    console.log('Parámetros de la solicitud:', params.toString());
+  
+    return this.http.get(`${environment.url}planillas_aportes/historial-completo`, { params });
   }
 
   getPlanillasTodo(): Observable<any> {
     return this.http.get(`${environment.url}planillas_aportes/historial`);
   }
   
-
   getPlanillaId(id_planilla: number): Observable<any> {
     return this.http.get(`${environment.url}planillas_aportes/${id_planilla}`);
   }
 
-  getPlanillaDetalle(id_planilla: number): Observable<any> {
-    return this.http.get(`${environment.url}planillas_aportes/detalles/${id_planilla}`);
+  getPlanillaDetalle(id_planilla: number,pagina: number = 1,limite: number = 10,busqueda: string = ''): Observable<any> {
+    let params = new HttpParams()
+      .set('pagina', pagina.toString())
+      .set('limite', limite.toString());
+    if (busqueda) {
+      params = params.set('busqueda', busqueda);
+    }
+    return this.http.get(`${environment.url}planillas_aportes/detalles/${id_planilla}`, { params });
   }
 
   enviarCorreccionPlanilla(id_planilla: number, trabajadores: any[]): Observable<any> {
@@ -77,19 +112,11 @@ export class PlanillasAportesService {
     });
   }
 
-  getPlanillasTodoHistorial(pagina: number = 0, limite: number = 10, busqueda: string = ''): Observable<any> {
-    let params = new HttpParams()
-      .set('pagina', pagina)  
-      .set('limite', limite);
-  
-    if (busqueda) {
-      params = params.set('busqueda', busqueda);
-    }
-  
-    console.log('Parámetros de la solicitud:', params.toString());
-  
-    return this.http.get(`${environment.url}planillas_aportes/historial-completo`, { params });
+  obtenerDatosPlanillaPorRegional(id_planilla: number): Observable<any> {
+    return this.http.get(`${environment.url}planillas_aportes/datos-planilla/${id_planilla}`);
   }
+
+
   
   
   

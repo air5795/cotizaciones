@@ -4,11 +4,12 @@ import { PlanillasAportesService } from '../../../servicios/planillas-aportes/pl
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { LazyLoadEvent } from 'primeng/api';
 
 @Component({
   selector: 'app-planillas-aportes-detalle',
   templateUrl: './planillas-aportes-detalle.component.html',
-  styleUrls: ['./planillas-aportes-detalle.component.css']
+  styleUrls: ['./planillas-aportes-detalle.component.css'],
 })
 export class PlanillasAportesDetalleComponent implements OnInit {
   idPlanilla!: number;
@@ -17,11 +18,22 @@ export class PlanillasAportesDetalleComponent implements OnInit {
   displayModal = false;
   trabajadorSeleccionado: any = {};
   planillaInfo: any = {};
-  
 
   mostrarModalImportacion = false;
   mostrarModalImportar = false;
   archivoSeleccionado: File | null = null;
+
+  pagina: number = 1;
+  limite: number = 15;
+  total: number = 0;
+  busqueda: string = '';
+
+  altas: any[] = [];
+  bajasNoEncontradas: any[] = [];
+  bajasPorRetiro: any[] = []; 
+
+  resumenData: any = null; // Para almacenar los datos del resumen
+  resumenLoading = false; // Indicador de carga para el resumen
 
 
 
@@ -37,37 +49,44 @@ export class PlanillasAportesDetalleComponent implements OnInit {
     { label: 'CHUQUISACA', value: 'CHUQUISACA' },
   ];
 
-  
-
-  constructor(private route: ActivatedRoute, private planillasService: PlanillasAportesService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private planillasService: PlanillasAportesService
+  ) {}
 
   ngOnInit(): void {
     this.idPlanilla = Number(this.route.snapshot.paramMap.get('id'));
     this.obtenerDetalles();
-    this.obtenerInformacionPlanilla(); 
+    this.obtenerInformacionPlanilla().then(() => {
+      this.obtenerComparacionPlanillas();
+      this.obtenerResumenPlanilla(); 
+    });
   }
 
-// Función para seleccionar el archivo
-seleccionarArchivo(event: any) {
-  this.archivoSeleccionado = event.target.files[0];
-}
+  // Función para seleccionar el archivo
+  seleccionarArchivo(event: any) {
+    this.archivoSeleccionado = event.target.files[0];
+  }
 
-// Función para cerrar el modal
-cerrarModalImportar() {
-  this.mostrarModalImportar = false;
-  this.archivoSeleccionado = null;
-}
+  // Función para cerrar el modal
+  cerrarModalImportar() {
+    this.mostrarModalImportar = false;
+    this.archivoSeleccionado = null;
+  }
 
-
-// Función para importar la planilla
-importarNuevaPlanilla() {
-  if (!this.archivoSeleccionado) {
-      Swal.fire({ icon: 'warning', title: 'Seleccione un archivo', text: 'Debe seleccionar un archivo antes de importar.' });
+  // Función para importar la planilla
+  importarNuevaPlanilla() {
+    if (!this.archivoSeleccionado) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Seleccione un archivo',
+        text: 'Debe seleccionar un archivo antes de importar.',
+      });
       return;
-  }
+    }
 
-  const reader = new FileReader();
-  reader.onload = (e: any) => {
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
       const binaryString = e.target.result;
       const workbook = XLSX.read(binaryString, { type: 'binary' });
       const sheetName = workbook.SheetNames[0];
@@ -76,107 +95,237 @@ importarNuevaPlanilla() {
 
       const headers = data[0] as string[];
       let trabajadores = data.slice(1).map((row: any) => {
-          let rowData: any = {};
-          headers.forEach((header: string, index: number) => {
-              rowData[header] = row[index];
-          });
-          return rowData;
+        let rowData: any = {};
+        headers.forEach((header: string, index: number) => {
+          rowData[header] = row[index];
+        });
+        return rowData;
       });
 
       // 🔥 Filtrar filas vacías
-      trabajadores = trabajadores.filter(row => 
-          Object.values(row).some(value => value !== undefined && value !== null && value !== '')
+      trabajadores = trabajadores.filter((row) =>
+        Object.values(row).some(
+          (value) => value !== undefined && value !== null && value !== ''
+        )
       );
 
-      console.log("Registros después de filtrar:", trabajadores.length);
-
       // Enviar los datos al backend
-      this.planillasService.actualizarDetallesPlanilla(this.idPlanilla, trabajadores).subscribe({
+      this.planillasService
+        .actualizarDetallesPlanilla(this.idPlanilla, trabajadores)
+        .subscribe({
           next: () => {
-              Swal.fire({ icon: 'success', title: 'Planilla actualizada', text: 'Los detalles han sido actualizados correctamente.' });
-              this.cerrarModalImportar();
-              this.obtenerDetalles();
+            Swal.fire({
+              icon: 'success',
+              title: 'Planilla actualizada',
+              text: 'Los detalles han sido actualizados correctamente.',
+            });
+            this.cerrarModalImportar();
+            this.obtenerDetalles();
           },
           error: (err) => {
-              console.error('Error al actualizar detalles:', err);
-              Swal.fire({ icon: 'error', title: 'Error', text: 'Hubo un problema al actualizar los detalles.' });
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al actualizar los detalles.',
+            });
+          },
+        });
+    };
+
+    reader.readAsBinaryString(this.archivoSeleccionado);
+  }
+
+  obtenerInformacionPlanilla(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
+        next: (data) => {
+          this.planillaInfo = data;
+          if (this.planillaInfo.planilla && this.planillaInfo.planilla.fecha_planilla) {
+            const fecha = new Date(this.planillaInfo.planilla.fecha_planilla);
+            const meses = [
+              'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO',
+              'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
+            ];
+            this.planillaInfo.planilla.mes = meses[fecha.getUTCMonth()];
+            this.planillaInfo.planilla.gestion = fecha.getUTCFullYear();
           }
+          console.log('Información de la planilla:', this.planillaInfo);
+          resolve(); 
+        },
+        error: (err) => {
+          console.error('Error al obtener información de la planilla:', err);
+          reject(err);
+        }
       });
-  };
-
-  reader.readAsBinaryString(this.archivoSeleccionado);
-}
-
-
-
-
-
-
-
-
-
-  obtenerInformacionPlanilla() {
-    this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
-      next: (data) => {
-        this.planillaInfo = data; 
-        console.log('Información de la planilla:', this.planillaInfo);
-      },
-      error: (err) => {
-        console.error('Error al obtener información de la planilla:', err);
-      }
     });
   }
 
-  
+  /* OBTENER DETALLES BUSQUEDA Y PAGINACION *************************************************************************************************** */
 
   obtenerDetalles() {
-    this.planillasService.getPlanillaDetalle(this.idPlanilla).subscribe({
+    this.loading = true;
+    this.planillasService
+      .getPlanillaDetalle(
+        this.idPlanilla,
+        this.pagina,
+        this.limite,
+        this.busqueda
+      )
+      .subscribe({
         next: (data) => {
-            this.trabajadores = data.trabajadores || []; // Asegúrate de que siempre sea un arreglo
-            this.loading = false;
+          this.trabajadores = data.trabajadores || [];
+          this.total = data.total || 0;
+          this.loading = false;
+          console.log('Datos recibidos:', data);
+          console.log('Página actual:', this.pagina);
+          console.log('Límite actual:', this.limite);
+          console.log('Total de registros:', this.total);
         },
         error: (err) => {
-            console.error('Error al obtener detalles:', err);
-            this.loading = false;
-        }
-    });
-}
+          console.error('Error al obtener detalles:', err);
+          this.loading = false;
+        },
+      });
+  }
 
-  getFondoEstado(estado: number): string {
+  onPageChange(event: any) {
+    this.pagina = Math.floor(event.first / event.rows) + 1;
+    this.limite = event.rows;
+    this.obtenerDetalles();
+  }
+
+  buscar(value: string): void {
+    this.busqueda = value.trim();
+    this.pagina = 1; 
+    this.obtenerDetalles();
+  }
+
+  recargar() {
+    this.busqueda = ''; 
+    this.pagina = 1; 
+    console.log('Búsqueda después de recargar:', this.busqueda);  
+    this.obtenerDetalles(); 
+  }
+
+/************************************************************************************************************************************************ */
+/* colores de estado *********************************************************************************************************************** */
+  getColorEstado(estado: number): string {
     switch (estado) {
       case 3:
-        return 'rgb(219, 119, 119)'; // Rojo claro para "Planilla Observada"
+        return '#ff4545';
       case 2:
-        return 'rgb(119, 219, 119)'; // Verde claro para "Planilla Aprobada"
+        return '#059b89';
       default:
-        return '#77bcdb'; // azul claro para "En Espera de Aprobación"
+        return '#bdb21c';
     }
   }
 
+  getFondoEstado(fondo: number): string {
+    switch (fondo) {
+      case 3:
+        return '#ffdfdf';
+      case 2:
+        return '#edfff6';
+      default:
+        return '#fcffe2';
+    }
+  }
+/**********************************************************************************************************************************************/ 
+/* BAJAS Y ALTAS ******************************************************************************************************************************/
+
+
+obtenerMesAnterior(fechaActual: string): { mesAnterior: string, gestion: string } | null {
+  const [year, month] = fechaActual.split('T')[0].split('-'); 
+  const añoActual = parseInt(year); 
+  const mesActual = parseInt(month) - 1; 
+
+  let añoAnterior = añoActual;
+  let mesAnterior = mesActual - 1; 
+
+  if (mesAnterior < 0) {
+    mesAnterior = 11; 
+    añoAnterior = añoActual - 1;
+  }
+
+  const mesAnteriorStr = String(mesAnterior + 1).padStart(2, '0'); // Convertir a 1-based (01-12)
+  const gestionAnterior = añoAnterior.toString();
+
+  console.log(`Entrada: ${fechaActual}, Mes actual (0-based): ${mesActual}, Mes anterior: ${mesAnteriorStr}, Gestión anterior: ${gestionAnterior}`);
+
+  return { mesAnterior: mesAnteriorStr, gestion: gestionAnterior };
+}
+
+
+obtenerComparacionPlanillas() {
+  if (!this.planillaInfo.planilla) return;
+
+  const { cod_patronal, fecha_planilla } = this.planillaInfo.planilla;
+  console.log(`Datos obtenidos: cod_patronal=${cod_patronal}, fecha_planilla=${fecha_planilla}`);
+
+  // Extraer gestión y mes actual directamente de fecha_planilla
+  const [year, month] = fecha_planilla.split('T')[0].split('-'); // "2024-02-01" -> ["2024", "02", "01"]
+  const gestion = year; // "2024"
+  const mesActual = month; // "02"
+
+  // Calcular mes anterior
+  const mesAnteriorData = this.obtenerMesAnterior(fecha_planilla);
+
+  if (!mesAnteriorData) {
+    console.warn("El mes anterior no fue calculado correctamente.");
+    return;
+  }
+
+  const { mesAnterior } = mesAnteriorData;
+
+  console.log(`Llamando a compararPlanillas con: 
+    cod_patronal=${cod_patronal}, 
+    gestion=${gestion}, 
+    mesAnterior=${mesAnterior}, 
+    mesActual=${mesActual}`);
+
+  this.planillasService.compararPlanillas(cod_patronal, gestion, mesAnterior, mesActual).subscribe({
+    next: (data) => {
+      console.log("Respuesta del backend:", data);
+      this.altas = data.altas;
+      this.bajasNoEncontradas = data.bajas.noEncontradas; // Bajas por trabajador no encontrado
+      this.bajasPorRetiro = data.bajas.porRetiro; // Bajas por fecha de retiro
+    },
+    error: (err) => {
+      console.error("Error al comparar planillas:", err);
+    }
+  });
+}
+
+
+
+
+
+/*************************************************************************************************************************************************/
   editarTrabajador(trabajador: any) {
     this.trabajadorSeleccionado = { ...trabajador };
     this.displayModal = true;
   }
 
   guardarEdicion() {
-    const index = this.trabajadores.findIndex(t => t.nro === this.trabajadorSeleccionado.nro);
+    const index = this.trabajadores.findIndex(
+      (t) => t.nro === this.trabajadorSeleccionado.nro
+    );
     if (index !== -1) {
       this.trabajadores[index] = { ...this.trabajadorSeleccionado };
     }
     this.displayModal = false;
-
   }
 
   guardarYEnviar() {
     for (let trabajador of this.trabajadores) {
       /* if (!trabajador.ci || !trabajador.apellido_paterno || !trabajador.nombres || 
           !trabajador.cargo || !trabajador.salario || !trabajador.fecha_ingreso || !trabajador.regional) { */
-          if (!trabajador.ci ) {
+      if (!trabajador.ci) {
         Swal.fire({
           icon: 'warning',
           title: 'Campos Vacíos',
           text: 'Hay trabajadores con campos vacíos. Verifica antes de enviar.',
-          confirmButtonText: 'Ok'
+          confirmButtonText: 'Ok',
         });
         return;
       }
@@ -186,7 +335,7 @@ importarNuevaPlanilla() {
           icon: 'error',
           title: 'Salario Inválido',
           text: `El salario de ${trabajador.nombres} debe ser mayor a 0.`,
-          confirmButtonText: 'Ok'
+          confirmButtonText: 'Ok',
         });
         return;
       }
@@ -194,32 +343,34 @@ importarNuevaPlanilla() {
 
     Swal.fire({
       title: '¿Confirmar envío?',
-      text: "¿Estás seguro de que deseas enviar la planilla corregida?",
+      text: '¿Estás seguro de que deseas enviar la planilla corregida?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, enviar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.planillasService.enviarCorreccionPlanilla(this.idPlanilla, this.trabajadores).subscribe({
-          next: (response) => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Planilla enviada',
-              text: 'La planilla corregida se ha enviado con éxito.',
-              confirmButtonText: 'Ok'
-            });
-          },
-          error: (err) => {
-            console.error('Error al enviar planilla corregida:', err);
-            Swal.fire({
-              icon: 'error',
-              title: 'Error al enviar',
-              text: 'Hubo un problema al enviar la planilla. Inténtalo de nuevo.',
-              confirmButtonText: 'Ok'
-            });
-          }
-        });
+        this.planillasService
+          .enviarCorreccionPlanilla(this.idPlanilla, this.trabajadores)
+          .subscribe({
+            next: (response) => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Planilla enviada',
+                text: 'La planilla corregida se ha enviado con éxito.',
+                confirmButtonText: 'Ok',
+              });
+            },
+            error: (err) => {
+              console.error('Error al enviar planilla corregida:', err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error al enviar',
+                text: 'Hubo un problema al enviar la planilla. Inténtalo de nuevo.',
+                confirmButtonText: 'Ok',
+              });
+            },
+          });
       }
     });
   }
@@ -230,7 +381,7 @@ importarNuevaPlanilla() {
         icon: 'warning',
         title: 'No hay datos',
         text: 'No hay trabajadores en la planilla para exportar.',
-        confirmButtonText: 'Ok'
+        confirmButtonText: 'Ok',
       });
       return;
     }
@@ -238,15 +389,20 @@ importarNuevaPlanilla() {
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.trabajadores);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Planilla');
-    const excelBuffer: any = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const excelBuffer: any = XLSX.write(wb, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    const data: Blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     saveAs(data, `Planilla_${this.idPlanilla}.xlsx`);
 
     Swal.fire({
       icon: 'success',
       title: 'Exportación Exitosa',
       text: 'La planilla ha sido exportada a Excel.',
-      confirmButtonText: 'Ok'
+      confirmButtonText: 'Ok',
     });
   }
 
@@ -254,89 +410,101 @@ importarNuevaPlanilla() {
 
   confirmarEliminacionDetalles() {
     Swal.fire({
-        title: '¿Eliminar los detalles de la planilla?',
-        text: 'Esta acción no se puede deshacer. ¿Desea continuar?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
+      title: '¿Eliminar los detalles de la planilla?',
+      text: 'Esta acción no se puede deshacer. ¿Desea continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
-        if (result.isConfirmed) {
-            this.eliminarDetallesPlanilla();
-        }
+      if (result.isConfirmed) {
+        this.eliminarDetallesPlanilla();
+      }
     });
-}
+  }
 
-eliminarDetallesPlanilla() {
-  this.planillasService.eliminarDetallesPlanilla(this.idPlanilla).subscribe({
+  eliminarDetallesPlanilla() {
+    this.planillasService.eliminarDetallesPlanilla(this.idPlanilla).subscribe({
       next: () => {
-          Swal.fire({
-              icon: 'success',
-              title: 'Detalles eliminados',
-              text: 'Los detalles de la planilla han sido eliminados correctamente.',
-          });
-          // Vaciar la lista de trabajadores manualmente
-          this.trabajadores = [];
-          this.loading = false; // Asegúrate de que el loading se desactive
+        Swal.fire({
+          icon: 'success',
+          title: 'Detalles eliminados',
+          text: 'Los detalles de la planilla han sido eliminados correctamente.',
+        });
+        // Vaciar la lista de trabajadores manualmente
+        this.trabajadores = [];
+        this.loading = false; // Asegúrate de que el loading se desactive
       },
       error: (err) => {
-          console.error('Error al eliminar detalles:', err);
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Hubo un problema al eliminar los detalles.' });
-          this.loading = false; // Asegúrate de que el loading se desactive en caso de error
-      }
-  });
-}
+        console.error('Error al eliminar detalles:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al eliminar los detalles.',
+        });
+        this.loading = false; // Asegúrate de que el loading se desactive en caso de error
+      },
+    });
+  }
 
-
-declararPlanilla() {
-  Swal.fire({
+  declararPlanilla() {
+    Swal.fire({
       title: '¿Declarar la planilla nuevamente?',
       text: 'Esto enviará la planilla para revisión.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, declarar',
-      cancelButtonText: 'Cancelar'
-  }).then((result) => {
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
       if (result.isConfirmed) {
-          this.planillasService.actualizarEstadoPlanilla(this.idPlanilla, 1).subscribe({
-              next: () => {
-                  Swal.fire({
-                      icon: 'success',
-                      title: 'Planilla enviada',
-                      text: 'La planilla ha sido declarada nuevamente.',
-                  });
-                  this.obtenerDetalles();
-              },
-              error: (err) => {
-                  console.error('Error al actualizar estado:', err);
-                  Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo declarar la planilla.' });
-              }
+        this.planillasService
+          .actualizarEstadoPlanilla(this.idPlanilla, 1)
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Planilla enviada',
+                text: 'La planilla ha sido declarada nuevamente.',
+              });
+              this.obtenerDetalles();
+            },
+            error: (err) => {
+              console.error('Error al actualizar estado:', err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo declarar la planilla.',
+              });
+            },
           });
       }
-  });
-}
+    });
+  }
 
+  // reporte de resumen de planilla declara -------------------------------------------------------------------------------------------
 
-// reporte de resumen de planilla declara -------------------------------------------------------------------------------------------
+  exportarPdfrResumen() {
+    if (!this.idPlanilla) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No hay datos',
+        text: 'No se ha cargado el ID de la planilla.',
+        confirmButtonText: 'Ok',
+      });
+      return;
+    }
 
-exportarPdfrResumen() {
-      if (!this.idPlanilla) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'No hay datos',
-          text: 'No se ha cargado el ID de la planilla.',
-          confirmButtonText: 'Ok'
-        });
-        return;
-      }
-    
-      this.planillasService.generarReporteResumen(this.idPlanilla).subscribe({
-        next: (data: Blob) => {
-          const fileURL = URL.createObjectURL(data);
-          const ventanaEmergente = window.open("", "VistaPreviaPDF", "width=900,height=600,scrollbars=no,resizable=no");
-    
-          if (ventanaEmergente) {
-            ventanaEmergente.document.write(`
+    this.planillasService.generarReporteResumen(this.idPlanilla).subscribe({
+      next: (data: Blob) => {
+        const fileURL = URL.createObjectURL(data);
+        const ventanaEmergente = window.open(
+          '',
+          'VistaPreviaPDF',
+          'width=900,height=600,scrollbars=no,resizable=no'
+        );
+
+        if (ventanaEmergente) {
+          ventanaEmergente.document.write(`
               <html>
                 <head>
                   <title>Vista Previa del PDF</title>
@@ -350,25 +518,54 @@ exportarPdfrResumen() {
                 </body>
               </html>
             `);
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'No se pudo abrir la vista previa del PDF. Es posible que el navegador haya bloqueado la ventana emergente.',
-              confirmButtonText: 'Ok'
-            });
-          }
-        },
-        error: (err) => {
-          console.error('Error al generar el reporte resumen:', err);
+        } else {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudo generar el reporte resumen.',
-            confirmButtonText: 'Ok'
+            text: 'No se pudo abrir la vista previa del PDF. Es posible que el navegador haya bloqueado la ventana emergente.',
+            confirmButtonText: 'Ok',
           });
         }
+      },
+      error: (err) => {
+        console.error('Error al generar el reporte resumen:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo generar el reporte resumen.',
+          confirmButtonText: 'Ok',
+        });
+      },
+    });
+  }
+
+  // resumen por regionales ----------------------------------------------------------------------------------------------------
+
+  obtenerResumenPlanilla() {
+    this.resumenLoading = true;
+    this.planillasService.obtenerDatosPlanillaPorRegional(this.idPlanilla).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.resumenData = response.data;
+          console.log('Datos del resumen:', this.resumenData);
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Advertencia',
+            text: 'No se pudieron obtener los datos del resumen.',
+          });
+        }
+        this.resumenLoading = false;
+      },
+      error: (err) => {
+        console.error('Error al obtener el resumen:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+            text: 'Hubo un problema al cargar los datos del resumen.',
+          });
+          this.resumenLoading = false;
+        },
       });
     }
-
 }

@@ -23,7 +23,6 @@ export class HistorialAportesComponent {
   }
 
   cargarPlanillas(): void {
-    // Verificar que 'pagina' sea un número válido
     if (this.pagina >= 0 && this.pagina !== undefined && this.limite > 0) {
       this.planillasService.getPlanillasTodoHistorial(this.pagina + 1, this.limite, this.busqueda).subscribe(
         (response) => {
@@ -40,16 +39,10 @@ export class HistorialAportesComponent {
   }
 
   onLazyLoad(event: LazyLoadEvent) {
-    // Si `event.first` o `event.rows` están undefined, usa valores por defecto
     const first = event.first ?? 0;
     const rows = event.rows ?? this.limite;
-  
-    // Actualiza los parámetros de paginación
     this.pagina = Math.floor(first / rows) + 1;
     this.limite = rows;
-  
-   
-    // Recarga los pacientes con los nuevos parámetros
     this.cargarPlanillas();
   }
 
@@ -67,7 +60,7 @@ export class HistorialAportesComponent {
   recargar() {
     this.busqueda = ''; 
     this.pagina = 0; 
-    console.log('Búsqueda después de recargar:', this.busqueda);  // Añadir un log
+    console.log('Búsqueda después de recargar:', this.busqueda);  
     this.cargarPlanillas(); 
   }
   

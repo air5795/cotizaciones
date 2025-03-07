@@ -9,5 +9,165 @@
 
 
 
+/* header ---------------------------------------------------------------------------------- */
+
+.cabezera-planilla {
+  background: linear-gradient(135deg, #e9e9e9, #e9e9e9);
+  color: white;
+  padding: 10px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #646464;
+
+}
+
+.detalle-cabezera-planilla {
+    display: flex;
+    flex-direction: column;
+    background-color: #e9e9e9;
+    padding: 6px;
+    border-radius: 10px;
+    padding-left: 15px;
+    border-left: 10px solid #00796b;
+}
 
 
+
+.list-container {
+    display: flex;
+    /* flex-direction: column; */
+    gap: 8px; 
+    padding: 3px;
+    background-color: #f5f7fa;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .list-item {
+    /* display: flex; */
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #6b7280;
+    text-transform: uppercase;
+  }
+  
+  .value {
+    font-size: 14px;
+    color: #02685f;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espacio entre el icono y el texto */
+  }
+  
+  .pi {
+    font-size: 14px; /* Tamaño de los iconos */
+  }
+
+
+  /* botones ------------------------------------------------------------------------------*/
+
+  .boton1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background-color: #558373; 
+
+    padding: 10px 20px; 
+    border-radius: 4px; 
+    transition: all 0.2s ease;
+  }
+  
+
+  .boton1:hover {
+    background-color: #61927d !important; /* Tono más oscuro */
+    transform: translateY(2px); /* Se hunde 2px */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+
+  }
+
+  .boton2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background-color: #5aa674; 
+
+    padding: 10px 20px; 
+    border-radius: 4px; 
+    transition: all 0.2s ease;
+  }
+  
+
+  .boton2:hover {
+    background-color: #58967b !important; /* Tono más oscuro */
+    transform: translateY(2px); /* Se hunde 2px */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+
+  }
+
+
+  /* PESTAÑAS TAB VIEW  ----------------------------------------------------------------------- */
+
+
+  .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    background-color: #f5f7fa;
+    color: #495057;
+    border-radius: 10px 10px 0 0;
+    padding: 0.5rem 1rem;
+    border: 1px solid #cfcfcf;
+  }
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    background-color: #be4242;
+    color: #03533f;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .p-tabview .p-tabview-nav .p-tabview-ink-bar {
+    background-color: #c1c1c1;
+  }
+
+  .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    border-radius: 10px 10px 0 0; 
+  }
+  
+  .p-tabview .p-tabview-nav li:nth-child(1).p-highlight .p-tabview-nav-link {
+    background-color: #e9e9e9; 
+    color: #03533f;
+    border: 1px solid #cfcfcf;
+  }
+
+  .p-tabview .p-tabview-nav li:nth-child(2).p-highlight .p-tabview-nav-link {
+    background-color: #d5effc; 
+    color: #032f53;
+    border: 1px solid #cfcfcf;
+  }
+  
+  .p-tabview .p-tabview-nav li:nth-child(3).p-highlight .p-tabview-nav-link {
+    background-color: #ffe6e6; 
+    color: #dc3545;
+    border: 1px solid #cfcfcf;
+  }
+
+  
+  .p-tabview .p-tabview-nav li:nth-child(4).p-highlight .p-tabview-nav-link {
+    background-color: #e6ffe6; 
+    color: #28a745;
+    border: 1px solid #cfcfcf;
+  }

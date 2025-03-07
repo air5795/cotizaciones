@@ -46,9 +46,14 @@ export class PlanillasAportesDetalleAprobarComponent {
     altas: any[] = [];
     bajas: any[] = [];
 
-    displayPdfModal: boolean = false; // Controla la visibilidad del modal
-    pdfSrc: string = ''; // URL del PDF para mostrar en el iframe
-  
+    displayPdfModal: boolean = false;
+    pdfSrc: string = '';
+
+
+  totalRegistros: number = 0;
+  pagina: number = 0;
+  limite: number = 15;
+  busqueda: string = '';
     
   
     constructor(
@@ -76,6 +81,13 @@ export class PlanillasAportesDetalleAprobarComponent {
           command: () => {
             this.exportarExcel();
           }
+        },
+        {
+          label: 'VALIDAR',
+          icon: 'pi pi-pencil',
+          command: () => {
+            this.mostrarModal();
+          }
         }
       ];
     }
@@ -83,21 +95,52 @@ export class PlanillasAportesDetalleAprobarComponent {
     ngOnInit(): void {
       this.idPlanilla = Number(this.route.snapshot.paramMap.get('id'));
       this.obtenerDetalles();
-      this.obtenerInformacionPlanilla(); 
+      this.obtenerInformacionPlanilla().then(() => {
+        this.obtenerComparacionPlanillas(); 
+      });
     }
 
-    obtenerMesAnterior(mesActual: string): string | null {
-      const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-      const index = meses.indexOf(mesActual.toUpperCase());
+    getColorEstado(estado: number): string {
+      switch (estado) {
+        case 3:
+          return '#ff4545'; 
+        case 2:
+          return '#059b89'; 
+        default:
+          return '#bdb21c'; 
+      }
+    }
+  
+    getFondoEstado(fondo: number): string {
+      switch (fondo) {
+        case 3:
+          return '#ffdfdf'; 
+        case 2:
+          return '#edfff6'; 
+        default:
+          return '#fcffe2'; 
+      }
+    }
+
+    obtenerMesAnterior(fechaActual: string): { mesAnterior: string, gestion: string } | null {
+      const [year, month] = fechaActual.split('T')[0].split('-'); 
+      const añoActual = parseInt(year); 
+      const mesActual = parseInt(month) - 1; 
     
-      console.log(`Mes actual recibido: ${mesActual}`);
-      console.log(`Índice del mes en la lista: ${index}`);
+      let añoAnterior = añoActual;
+      let mesAnterior = mesActual - 1; 
     
-      // Si el mes es enero, devolver diciembre, en caso contrario, devolver el mes anterior
-      const mesAnterior = index > 0 ? meses[index - 1] : "DICIEMBRE";
-      console.log(`Mes anterior calculado: ${mesAnterior}`);
+      if (mesAnterior < 0) {
+        mesAnterior = 11; 
+        añoAnterior = añoActual - 1;
+      }
     
-      return mesAnterior;
+      const mesAnteriorStr = String(mesAnterior + 1).padStart(2, '0'); // Convertir a 1-based (01-12)
+      const gestionAnterior = añoAnterior.toString();
+    
+      console.log(`Entrada: ${fechaActual}, Mes actual (0-based): ${mesActual}, Mes anterior: ${mesAnteriorStr}, Gestión anterior: ${gestionAnterior}`);
+    
+      return { mesAnterior: mesAnteriorStr, gestion: gestionAnterior };
     }
     
     
@@ -105,19 +148,31 @@ export class PlanillasAportesDetalleAprobarComponent {
     obtenerComparacionPlanillas() {
       if (!this.planillaInfo.planilla) return;
     
-      const { cod_patronal, gestion, mes } = this.planillaInfo.planilla;
-      console.log(`Datos obtenidos: cod_patronal=${cod_patronal}, gestion=${gestion}, mes=${mes}`);
+      const { cod_patronal, fecha_planilla } = this.planillaInfo.planilla;
+      console.log(`Datos obtenidos: cod_patronal=${cod_patronal}, fecha_planilla=${fecha_planilla}`);
     
-      const mesAnterior = this.obtenerMesAnterior(mes);
+      // Extraer gestión y mes actual directamente de fecha_planilla
+      const [year, month] = fecha_planilla.split('T')[0].split('-'); // "2024-02-01" -> ["2024", "02", "01"]
+      const gestion = year; // "2024"
+      const mesActual = month; // "02"
     
-      if (!mesAnterior) {
+      // Calcular mes anterior
+      const mesAnteriorData = this.obtenerMesAnterior(fecha_planilla);
+    
+      if (!mesAnteriorData) {
         console.warn("El mes anterior no fue calculado correctamente.");
         return;
       }
     
-      console.log(`Llamando a compararPlanillas con mesAnterior=${mesAnterior}, mesActual=${mes}`);
+      const { mesAnterior } = mesAnteriorData;
     
-      this.planillasService.compararPlanillas(cod_patronal, gestion, mesAnterior, mes).subscribe({
+      console.log(`Llamando a compararPlanillas con: 
+        cod_patronal=${cod_patronal}, 
+        gestion=${gestion}, 
+        mesAnterior=${mesAnterior}, 
+        mesActual=${mesActual}`);
+    
+      this.planillasService.compararPlanillas(cod_patronal, gestion, mesAnterior, mesActual).subscribe({
         next: (data) => {
           console.log("Respuesta del backend:", data);
           this.altas = data.altas;
@@ -130,16 +185,28 @@ export class PlanillasAportesDetalleAprobarComponent {
     }
     
   
-    obtenerInformacionPlanilla() {
-      this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
-        next: (data) => {
-          this.planillaInfo = data; 
-          this.obtenerComparacionPlanillas();
-          console.log('Información de la planilla:', this.planillaInfo);
-        },
-        error: (err) => {
-          console.error('Error al obtener información de la planilla:', err);
-        }
+    obtenerInformacionPlanilla(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
+          next: (data) => {
+            this.planillaInfo = data;
+            if (this.planillaInfo.planilla && this.planillaInfo.planilla.fecha_planilla) {
+              const fecha = new Date(this.planillaInfo.planilla.fecha_planilla);
+              const meses = [
+                'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO',
+                'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
+              ];
+              this.planillaInfo.planilla.mes = meses[fecha.getUTCMonth()];
+              this.planillaInfo.planilla.gestion = fecha.getUTCFullYear();
+            }
+            console.log('Información de la planilla:', this.planillaInfo);
+            resolve(); 
+          },
+          error: (err) => {
+            console.error('Error al obtener información de la planilla:', err);
+            reject(err);
+          }
+        });
       });
     }
   
@@ -241,9 +308,11 @@ export class PlanillasAportesDetalleAprobarComponent {
       }
     
       const { cod_patronal, gestion, mes } = this.planillaInfo.planilla;
-      const mesAnterior = this.obtenerMesAnterior(mes);
     
-      if (!mesAnterior) {
+      // Obtener mes anterior (esperamos que mes sea una fecha como "2025-02-01")
+      const mesAnteriorData = this.obtenerMesAnterior(mes);
+    
+      if (!mesAnteriorData) {
         Swal.fire({
           icon: 'warning',
           title: 'No hay mes anterior',
@@ -252,6 +321,8 @@ export class PlanillasAportesDetalleAprobarComponent {
         });
         return;
       }
+    
+      const { mesAnterior } = mesAnteriorData; // Extraemos solo el mesAnterior como string
     
       this.planillasService.generarReporteBajas(this.idPlanilla, cod_patronal, mesAnterior, mes, gestion).subscribe({
         next: (data: Blob) => {

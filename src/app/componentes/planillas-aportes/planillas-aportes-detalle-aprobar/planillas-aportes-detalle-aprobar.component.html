@@ -1,16 +1,101 @@
 <div class="grid dashboard">
     <div class="col-12 md:col-12 lg:6">
       <div class="perfil-empleador">
-        <div class="header">
-          <div class="header-left">
+        <div class="cabezera-planilla">
+          <div class="">
+            <h2 style="font-size: 18px; display: flex; align-items: center; font-family: 'Roboto', sans-serif; margin: 5px 0 5px;">
+              <span style="background-color: #009688; color: white; padding: 6px 10px; border-radius: 4px 0 0 4px; display: flex; align-items: center;">
+                <i class="pi pi-book" style="font-size: 1.2rem; margin-right: 6px; color: white;"></i>
+                Planilla N° {{ planillaInfo.planilla.com_nro }}
+              </span>
+              <span style="background-color: #03665d; color: white; padding: 6px 10px; border-radius: 0 4px 4px 0;">
+                {{ planillaInfo.planilla.empresa }}
+              </span>
+            </h2>
             
-            <h2>PLANILLA N°  {{ planillaInfo.planilla.com_nro }} - {{ planillaInfo.planilla.empresa }}</h2>
             
-            <span class="razon-social"> GESTION: {{ planillaInfo.planilla.gestion }} | MES: {{ planillaInfo.planilla.mes }}</span>
-            <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
-            <span class="numero-patronal"> N° DE TRABAJADORES : {{ planillaInfo.planilla.total_trabaj }} | TOTAL IMPORTE : {{ planillaInfo.planilla.total_importe }} Bs </span>
+            <hr style="border: 1px solid #949494; margin: 10px 0;">
+
+            <div class="list-container">
+              <!-- Estado de Planilla -->
+              <div [ngSwitch]="planillaInfo.planilla.estado" class="list-item" 
+                [ngStyle]="{'background-color': getFondoEstado(planillaInfo.planilla.estado)}">
+              <div class="estado-container" *ngSwitchCase="1">
+                <span class="label">ESTADO</span>
+                <span class="value" [ngStyle]="{'color': getColorEstado(planillaInfo.planilla.estado)}">
+                  PLANILLA PRESENTADA <i class="pi pi-check-circle"></i>
+                </span>
+              </div>
+              <div class="estado-container" *ngSwitchCase="2">
+                <span class="label">ESTADO</span>
+                <span class="value" [ngStyle]="{'color': getColorEstado(planillaInfo.planilla.estado)}">
+                  PLANILLA APROBADA <i class="pi pi-check"></i>
+                </span>
+              </div>
+              <div class="estado-container" *ngSwitchCase="3">
+                <span class="label">ESTADO</span>
+                <span class="value" [ngStyle]="{'color': getColorEstado(planillaInfo.planilla.estado)}">
+                  PLANILLA OBSERVADA <i class="pi pi-exclamation-triangle"></i>
+                </span>
+              </div>
+            </div>
+            
+              <!-- Gestión -->
+              <div class="list-item">
+                <span class="label">Gestión</span>
+                <span class="value">
+                  <i class="pi pi-calendar"></i> {{ planillaInfo.planilla.gestion }}
+                </span>
+              </div>
+            
+              <!-- Mes -->
+              <div class="list-item">
+                <span class="label" style="justify-content: center;">Mes</span>
+                <span class="value" style="justify-content: center;">
+                  <i class="pi pi-calendar"></i> {{ planillaInfo.planilla.mes }}
+                </span>
+              </div>
+
+              <!-- Total Importe -->
+              <div class="list-item">
+                <span class="label" style="justify-content: center;">Total Importe</span>
+                <span class="value" style="justify-content: center;">
+                  <i class="pi pi-money-bill"></i> {{ planillaInfo.planilla.total_importe | number:'1.2-2' }} Bs
+                </span>
+              </div>
+            
+              <!-- N° de Trabajadores -->
+              <div class="list-item">
+                <span class="label" style="justify-content: center;">N° de Registros</span>
+                <span class="value" style="justify-content: center;">
+                  <i class="pi pi-users"></i> {{ planillaInfo.planilla.total_trabaj }}
+                </span>
+              </div>
+            
+              
+
+               <!-- Total Bajas -->
+               <div class="list-item" style="background-color: #ffe9e9;">
+                <span class="label" style="justify-content: center;">Total Bajas</span>
+                <span class="value" style="justify-content: center;">
+                  <i class="pi pi-user"></i> {{ bajas.length }} 
+                </span>
+              </div>
+
+              <!-- Total Bajas -->
+              <div class="list-item" style="background-color: #daffcf;" >
+                <span class="label" style="justify-content: center;">Total Altas</span>
+                <span class="value" style="justify-content: center;">
+                  <i class="pi pi-user"></i> {{ altas.length }} 
+                </span>
+              </div>
+            </div>
+
+            
+
+
           </div>
-          <div class="header-right">
+          <div class="">
             <div class="button-container">
             
 
@@ -38,139 +123,155 @@
 
             </div>
           </div>
+
+          
         </div>
 
+        
+
       </div>
     </div>
   </div>
+
   
-  <p-table
-    [value]="trabajadores"
-    [paginator]="true"
-    [rows]="10"
-    [loading]="loading"
-    responsiveLayout="scroll"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Nro</th>
-        <th>Nombre Completo</th>
-        <th>Cargo</th>
-        <th>Salario</th>
-        <th>Fecha de Ingreso</th>
-        <th>Fecha de Retiro</th>
-        <th>Regional</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-trabajador let-i="rowIndex">
-      <tr>
-        <td>{{ trabajador.nro }}</td>
-        <td>{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }}  {{ trabajador.nombres }}</td>
-        <td>{{ trabajador.cargo }}</td>
-        <td>{{ trabajador.salario }}</td>
-        <td>{{ trabajador.fecha_ingreso }}</td>
-        <td>{{ trabajador.fecha_retiro}}</td>
-        <td>{{ trabajador.regional }}</td>
-       
-      </tr>
-    </ng-template>
-  </p-table>
 
-<hr style="margin: 5px; border: 1px solid rgb(225 225 225 / 43%)">
-<div class="grid">
-  <!-- ALTAS -->
-  <div class="col-6" style="border-bottom: 1px solid green; padding: 0; gap: 2px; padding-right: 5px;">
-    <div style="display: flex; align-items: center; justify-content: space-between; border-top: 3px solid #007d70; background-color: #e3e3e3; padding: 5px;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <i class="pi pi-angle-double-up" style="color: #007d70; font-size: 1.5rem;"></i>
-        <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Altas</span>
-      </div>
-      <button pButton type="button" class="p-button p-button-sm" style="display: flex; align-items: center; gap: 15px; padding: 5px 10px; font-size: large; background-color: #007d70;">
-        <i class="pi pi-users"></i> <span>{{ altas.length }}</span>
-      </button>
-    </div>
 
-    <!-- Si hay altas, mostrar tabla -->
-    <div *ngIf="altas.length > 0" style="height: 300px; overflow-y: auto;">
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">#</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Regional</th>
-            <th style="text-align: left;background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Nombre Completo y Cargo</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Salario</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Ingreso</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Retiro</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let trabajador of altas">
-            <td style="text-align: center; background-color: #edfff7; padding: 8px; font-weight: 600;">{{ trabajador.nro }}</td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.regional }}</td>
-            <td style="padding-left: 5px; padding: 8px;">
-              <strong>{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</strong><br>
-              {{ trabajador.cargo }}
-            </td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.salario }}</td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_ingreso | date:'dd/MM/yyyy' }}</td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_retiro | date:'dd/MM/yyyy' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <p-tabView [style]="{ padding: '15px' , 'border': '1px solid gray'}">
+        <p-tabPanel header="PLANILLA DECLARADA">
+            <p>
+              <p-table
+              [value]="trabajadores"
+              [paginator]="true"
+              [rows]="20"
+              [loading]="loading"
+              responsiveLayout="scroll"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Nro</th>
+                  <th>Nombre Completo</th>
+                  <th>Cargo</th>
+                  <th>Salario</th>
+                  <th>Fecha de Ingreso</th>
+                  <th>Fecha de Retiro</th>
+                  <th>Regional</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-trabajador let-i="rowIndex">
+                <tr>
+                  <td>{{ trabajador.nro }}</td>
+                  <td>{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }}  {{ trabajador.nombres }}</td>
+                  <td>{{ trabajador.cargo }}</td>
+                  <td>{{ trabajador.salario }}</td>
+                  <td>{{ trabajador.fecha_ingreso }}</td>
+                  <td>{{ trabajador.fecha_retiro}}</td>
+                  <td>{{ trabajador.regional }}</td>
+                 
+                </tr>
+              </ng-template>
+            </p-table>
+            </p>
+        </p-tabPanel>
+        <p-tabPanel header="BAJAS">
+          <div class="col-12" style="border-bottom: 1px solid rgb(201, 66, 32); padding: 0; gap: 2px; padding-right: 5px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 3px solid #da4343; background-color: #e3e3e3; padding: 5px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="pi pi-angle-double-down" style="color: #e45b5b; font-size: 1.5rem;"></i>
+                <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Bajas</span>
+              </div>
+              <button pButton type="button" class="p-button p-button-sm" style="display: flex; align-items: center; gap: 15px; padding: 5px 10px; font-size: large; background-color: #7d0000;">
+                <i class="pi pi-users"></i> <span>{{ bajas.length }}</span>
+              </button>
+            </div>
+        
+            <!-- Si hay bajas, mostrar tabla -->
+            <div *ngIf="bajas.length > 0" style="height: 300px; overflow-y: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">#</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Regional</th>
+                    <th style="text-align: left; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Nombre Completo y Cargo</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Salario</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Ingreso</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Retiro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let trabajador of bajas">
+                    <td style="text-align: center; background-color: #ffeded; padding: 8px; font-weight: 600;">{{ trabajador.nro }}</td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.regional }}</td>
+                    <td style="padding-left: 5px; padding: 8px;">
+                      <strong>{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</strong><br>
+                      {{ trabajador.cargo }}
+                    </td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.salario }}</td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_ingreso | date:'dd/MM/yyyy' }}</td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_retiro | date:'dd/MM/yyyy' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        
+            <!-- Si no hay BAJAS, mostrar mensaje -->
+            <div *ngIf="bajas.length === 0" style="text-align: center; font-size: 1.2rem; color: #6c757d; margin-top: 10px;">
+              <strong>No hay nuevas bajas en esta planilla.</strong>
+            </div>
+          </div>
+        </p-tabPanel>
+        <p-tabPanel header="ALTAS">
+          <div class="col-12" style="border-bottom: 1px solid green; padding: 0; gap: 2px; padding-right: 5px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 3px solid #007d70; background-color: #e3e3e3; padding: 5px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="pi pi-angle-double-up" style="color: #007d70; font-size: 1.5rem;"></i>
+                <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Altas</span>
+              </div>
+              <button pButton type="button" class="p-button p-button-sm" style="display: flex; align-items: center; gap: 15px; padding: 5px 10px; font-size: large; background-color: #007d70;">
+                <i class="pi pi-users"></i> <span>{{ altas.length }}</span>
+              </button>
+            </div>
+        
+            <div *ngIf="altas.length > 0" style="height: 300px; overflow-y: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">#</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Regional</th>
+                    <th style="text-align: left;background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Nombre Completo y Cargo</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Salario</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Ingreso</th>
+                    <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Retiro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let trabajador of altas">
+                    <td style="text-align: center; background-color: #edfff7; padding: 8px; font-weight: 600;">{{ trabajador.nro }}</td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.regional }}</td>
+                    <td style="padding-left: 5px; padding: 8px;">
+                      <strong>{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</strong><br>
+                      {{ trabajador.cargo }}
+                    </td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.salario }}</td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_ingreso | date:'dd/MM/yyyy' }}</td>
+                    <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_retiro | date:'dd/MM/yyyy' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        
+            <!-- Si no hay altas, mostrar mensaje -->
+            <div *ngIf="altas.length === 0" style="text-align: center; font-size: 1.2rem; color: #6c757d; margin-top: 10px;">
+              <strong>No hay nuevas altas en esta planilla.</strong>
+            </div>
+          </div>
+        </p-tabPanel>
+    </p-tabView>
 
-    <!-- Si no hay altas, mostrar mensaje -->
-    <div *ngIf="altas.length === 0" style="text-align: center; font-size: 1.2rem; color: #6c757d; margin-top: 10px;">
-      <strong>No hay nuevas altas en esta planilla.</strong>
-    </div>
-  </div>
 
-  <div class="col-6" style="border-bottom: 1px solid rgb(201, 66, 32); padding: 0; gap: 2px; padding-right: 5px;">
-    <div style="display: flex; align-items: center; justify-content: space-between; border-top: 3px solid #da4343; background-color: #e3e3e3; padding: 5px;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <i class="pi pi-angle-double-up" style="color: #e45b5b; font-size: 1.5rem;"></i>
-        <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Altas</span>
-      </div>
-      <button pButton type="button" class="p-button p-button-sm" style="display: flex; align-items: center; gap: 15px; padding: 5px 10px; font-size: large; background-color: #7d0000;">
-        <i class="pi pi-users"></i> <span>{{ bajas.length }}</span>
-      </button>
-    </div>
+  
 
-    <!-- Si hay bajas, mostrar tabla -->
-    <div *ngIf="bajas.length > 0" style="height: 300px; overflow-y: auto;">
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">#</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Regional</th>
-            <th style="text-align: left; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Nombre Completo y Cargo</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Salario</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Ingreso</th>
-            <th style="text-align: center; background-color: #f8f9fa; padding: 8px; position: sticky; top: 0;">Fecha de Retiro</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let trabajador of bajas">
-            <td style="text-align: center; background-color: #ffeded; padding: 8px; font-weight: 600;">{{ trabajador.nro }}</td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.regional }}</td>
-            <td style="padding-left: 5px; padding: 8px;">
-              <strong>{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }} {{ trabajador.nombres }}</strong><br>
-              {{ trabajador.cargo }}
-            </td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.salario }}</td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_ingreso | date:'dd/MM/yyyy' }}</td>
-            <td style="text-align: center; padding: 8px;">{{ trabajador.fecha_retiro | date:'dd/MM/yyyy' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
 
-    <!-- Si no hay altas, mostrar mensaje -->
-    <div *ngIf="altas.length === 0" style="text-align: center; font-size: 1.2rem; color: #6c757d; margin-top: 10px;">
-      <strong>No hay nuevas bajas en esta planilla.</strong>
-    </div>
-  </div>
-</div>
+
   
   
   
