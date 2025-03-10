@@ -254,30 +254,41 @@
           <table class="p-datatable p-datatable-striped w-full">
             <tbody>
               <tr>
-                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200 ">Empleador</td>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">
+                  <i class="pi pi-building mr-2"></i> Empleador
+                </td>
                 <td class="p-3 border-bottom-1 border-gray-200 text-gray-700">{{ resumenData.planilla.empresa }}</td>
               </tr>
               <tr class="surface-ground">
-                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Importe</td>
-                <td class="p-3 border-bottom-1 border-gray-200 text-gray-700">{{ resumenData.planilla.total_importe | number:'1.2-2' }} Bs </td>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">
+                  <i class="pi pi-money-bill mr-2"></i> Total Importe
+                </td>
+                <td class="p-3 border-bottom-1 border-gray-200 text-gray-700">{{ resumenData.planilla.total_importe | number:'1.2-2' }} Bs</td>
               </tr>
               <tr>
-                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Registros</td>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">
+                  <i class="pi pi-users mr-2"></i> Total Registros
+                </td>
                 <td class="p-3 border-bottom-1 border-gray-200 text-gray-700">{{ resumenData.planilla.total_trabaj }}</td>
               </tr>
               <tr class="surface-ground">
-                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Altas</td>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">
+                  <i class="pi pi-user-plus mr-2"></i> Total Altas
+                </td>
                 <td class="p-3 border-bottom-1 border-gray-200 text-green-400">{{ altas.length }}</td>
               </tr>
-              <tr >
-                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Total Bajas por Retiro en mes actual</td>
+              <tr>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">
+                  <i class="pi pi-user-minus mr-2"></i> Total Bajas por Retiro en mes actual
+                </td>
                 <td class="p-3 border-bottom-1 border-gray-200 text-pink-400">{{ bajasPorRetiro.length }}</td>
               </tr>
               <tr class="surface-ground" *ngIf="bajasNoEncontradas.length > 0">
-                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">Trabajador no encontrado en el mes actual</td>
+                <td class="font-bold text-blue-900 p-3 border-bottom-1 border-gray-200">
+                  <i class="pi pi-exclamation-triangle mr-2"></i> Trabajador no encontrado en el mes actual
+                </td>
                 <td class="p-3 border-bottom-1 border-gray-200 text-pink-400">{{ bajasNoEncontradas.length }} (Verificar)</td>
               </tr>
-            
             </tbody>
           </table>
         </div>
@@ -299,31 +310,44 @@
       >
         <ng-template pTemplate="header">
           <tr>
-            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: left;">Regional</th>
-            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: right;">Cantidad</th>
-            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: right;">Total Ganado</th>
-            <th style="padding: 1rem; background-color: #1f2a44; color: #ffffff; font-weight: 600; border-bottom: 2px solid #374151; text-align: right;">10% del Total</th>
+            <th style="padding: 1rem; background-color:#e3e3e3 ; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: left;">
+              <i class="pi pi-map-marker mr-2"></i> Regional
+            </th>
+            <th style="padding: 1rem; background-color:#e3e3e3 ; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: right;">
+              <i class="pi pi-users mr-2"></i> Cantidad
+            </th>
+            <th style="padding: 1rem; background-color:#e3e3e3 ; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: right;">
+              <i class="pi pi-money-bill mr-2"></i> Total Ganado
+            </th>
+            <th style="padding: 1rem; background-color:#e3e3e3 ; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: right;">
+              <i class="pi pi-percentage mr-2"></i> 10% del Total
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-region>
           <tr>
             <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb;">{{ region.regional }}</td>
-            <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.cantidad }}</td>
+            <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.cantidad | number:'1.0-0' }}</td>
             <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.total_ganado }}</td>
             <td style="padding: 0.875rem 1rem; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.porcentaje_10 }}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="footer">
-          <tr *ngIf="resumenData?.totales" style="background-color: #d2ffd4; font-weight: 600; color: #1f2a44;">
-            <td style="padding: 1rem; border-top: 2px solid #e5e7eb;">Totales</td>
-            <td style="padding: 1rem; border-top: 2px solid #e5e7eb; text-align: right;">{{ resumenData.totales.cantidad_total }}</td>
-            <td style="padding: 1rem; border-top: 2px solid #e5e7eb; text-align: right;">{{ resumenData.totales.total_ganado }}</td>
-            <td style="padding: 1rem; border-top: 2px solid #e5e7eb; text-align: right;">{{ resumenData.totales.porcentaje_10 }}</td>
+          <tr *ngIf="resumenData?.totales" 
+              style="background-color: #fef3c7; font-weight: 700; color: #713f12; border-top: 3px double #4b5563; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); ">
+            <td style="padding: 1rem; background-color: #e3e3e3; color: #5f5f5f; border-top: 3px double #4b5563; ">
+              <i class="pi pi-chart-bar mr-2"></i> Totales
+            </td>
+            <td style="padding: 1rem; text-align: right; background-color: #dffff5;border-top: 3px double #4b5563;">{{ resumenData.totales.cantidad_total | number:'1.0-0' }}</td>
+            <td style="padding: 1rem; text-align: right; background-color: #dffff5;border-top: 3px double #4b5563;">{{ resumenData.totales.total_ganado }}</td>
+            <td style="padding: 1rem; text-align: right; background-color: #dffff5;border-top: 3px double #4b5563;">{{ resumenData.totales.porcentaje_10 }}</td>
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="4" style="padding: 1.5rem; text-align: center; color: #6b7280; font-style: italic; background-color: #f9fafb;">No hay datos para mostrar.</td>
+            <td colspan="4" style="padding: 1.5rem; text-align: center; color: #6b7280; font-style: italic; background-color: #f9fafb;">
+              <i class="pi pi-info-circle mr-2"></i> No hay datos para mostrar.
+            </td>
           </tr>
         </ng-template>
       </p-table>
