@@ -93,7 +93,7 @@ class="tabla-centrada"
 
     <ng-template pTemplate="header">
       <tr>
-     
+        
         <th>N° de Comprobante</th>
         <th>Fecha Declarada</th>
         <th>Mes</th>
@@ -105,9 +105,17 @@ class="tabla-centrada"
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-planilla>
-  <tr>
+     
+    <tr>
     <td>COM-{{ planilla.com_nro }}</td>
-    <td>{{ planilla.fecha_creacion | date: 'dd/MM/yyyy' }}</td>
+    <td>
+      <span *ngIf="planilla.fecha_declarada; else sinFecha">
+        {{ planilla.fecha_declarada | date: 'dd/MM/yyyy' }}
+      </span>
+      <ng-template #sinFecha>
+        <span style="color: red;"> No Declarado</span>
+      </ng-template>
+    </td>
     <td>{{ planilla.mes }}</td> 
     <td>{{ planilla.gestion }}</td> 
     <td style="text-align: center;">
@@ -119,22 +127,19 @@ class="tabla-centrada"
       <span>{{ planilla.total_importe | number:'1.2-2' }} Bs</span>
     </td>
     <td style="width: 200px; text-align: center;">
-        <!-- Contenedor principal con flexbox -->
         <div class="semaforo-container">
-          <!-- Semáforo con los 3 círculos visibles, solo uno marcado -->
-          <div class="semaforo">
-            <!-- Círculo amarillo para pendiente, solo se marca si el estado es pendiente -->
-            <span [class.yellow]="planilla.estado === 1" [class.gray]="planilla.estado !== 1" class="circle"></span>
-            <!-- Círculo rojo para observado, solo se marca si el estado es observado -->
+          <!-- <div class="semaforo">
+            <span [class.purple]="planilla.estado === 0" [class.gray]="planilla.estado !== 0" class="circle"></span>
+            <span [class.blue]="planilla.estado === 1" [class.gray]="planilla.estado !== 1" class="circle"></span>
             <span [class.red]="planilla.estado === 3" [class.gray]="planilla.estado !== 3" class="circle"></span>
-            <!-- Círculo verde para aprobado, solo se marca si el estado es aprobado -->
             <span [class.green]="planilla.estado === 2" [class.gray]="planilla.estado !== 2" class="circle"></span>
-          </div>
+          </div> -->
           <!-- Botones de estado -->
           <div class="label-container">
-            <button *ngIf="planilla.estado === 1" class="estado-btn pendiente" style="width: 100px;">Enviado</button>
-            <button *ngIf="planilla.estado === 2" class="estado-btn aprobado" style="width: 100px;">Aprobado</button>
-            <button *ngIf="planilla.estado === 3" class="estado-btn observado" style="width: 100px;">Observado</button>
+            <button *ngIf="planilla.estado === 0" class="estado-btn borrador" style="width: 170px;">BORRADOR</button>
+            <button *ngIf="planilla.estado === 1" class="estado-btn pendiente" style="width: 170px;">PLANILLA PRESENTADA</button>
+            <button *ngIf="planilla.estado === 2" class="estado-btn aprobado" style="width: 170px;">PLANILLA APROBADA</button>
+            <button *ngIf="planilla.estado === 3" class="estado-btn observado" style="width: 170px;">PLANILLA OBSERVADA</button>
           </div>
         </div>
       </td>
@@ -147,6 +152,7 @@ class="tabla-centrada"
         (click)="verDetalle(planilla.id_planilla_aportes)"
         [style]="{backgroundColor: '#007063', color: 'white' , width: '100%',borderRadius: '0px'}"
       ></button>
+
     </td>
   </tr>
 </ng-template>

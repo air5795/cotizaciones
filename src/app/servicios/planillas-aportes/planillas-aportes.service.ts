@@ -91,6 +91,10 @@ export class PlanillasAportesService {
     return this.http.put(`${environment.url}planillas_aportes/estado/${id_planilla}`, body);
   }
 
+  actualizarEstadoAPendiente(idPlanilla: number) {
+    return this.http.put(`${environment.url}planillas_aportes/estado/pendiente/${idPlanilla}`, {});
+  }
+
   eliminarDetallesPlanilla(id_planilla: number): Observable<any> {
     return this.http.delete(`${environment.url}planillas_aportes/detalles/${id_planilla}`);
   }

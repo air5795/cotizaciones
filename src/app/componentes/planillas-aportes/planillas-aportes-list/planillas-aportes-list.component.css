@@ -130,9 +130,17 @@
     height: 20px;
     margin: 0 2px;
   }
+
+  .purple {
+    background-color: #9c27b0;
+  }
   
   .yellow {
     background-color: #ebebb8;
+  }
+
+  .blue{
+    background-color: #739eb5;
   }
   
   .green {
@@ -159,18 +167,23 @@
 
   .estado-btn {
     padding: 0.25rem 0.5rem; /* Ajusta el padding para que sea compacto */
-    border: none; /* Quita el borde */
+    border: 1px solid gray;/* Quita el borde */
     border-radius: 4px; /* Bordes redondeados */
     font-size: 12px; /* Tamaño de fuente */
     font-weight: 600; /* Grosor de la fuente */
     color: white; /* Texto en blanco */
     cursor: default; /* Evita que el cursor cambie a pointer */
   }
+
+  .borrador {
+    background-color: #f0f0f0; /* Gris claro */
+    color: #333; /* Texto oscuro para mejor contraste */
+  }
   
   /* Estilo para el botón "Pendiente" */
   .pendiente {
-    background-color: #ebebb8; /* Amarillo claro */
-    color: #333; /* Texto oscuro para mejor contraste */
+    background-color: #d7f1ff; /* Amarillo claro */
+    color: #547485; /* Texto oscuro para mejor contraste */
   }
   
   /* Estilo para el botón "Aprobado" */

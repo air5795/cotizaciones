@@ -121,6 +121,26 @@
 
   }
 
+  .boton3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background-color: #47a36d; 
+
+    padding: 10px 20px; 
+    border-radius: 4px; 
+    transition: all 0.2s ease;
+  }
+
+  .boton3:hover {
+    background-color: #51ca84 !important; /* Tono más oscuro */
+    transform: translateY(2px); /* Se hunde 2px */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+
+  }
+
 
   /* PESTAÑAS TAB VIEW  ----------------------------------------------------------------------- */
 

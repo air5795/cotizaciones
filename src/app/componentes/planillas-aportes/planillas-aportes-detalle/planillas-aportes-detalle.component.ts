@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlanillasAportesService } from '../../../servicios/planillas-aportes/planillas-aportes.service';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
@@ -51,7 +51,8 @@ export class PlanillasAportesDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private planillasService: PlanillasAportesService
+    private planillasService: PlanillasAportesService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -213,21 +214,25 @@ export class PlanillasAportesDetalleComponent implements OnInit {
     switch (estado) {
       case 3:
         return '#ff4545';
+      case 0:
+        return '#b769fb';
       case 2:
         return '#059b89';
       default:
-        return '#bdb21c';
+        return '#558fbb';
     }
   }
 
   getFondoEstado(fondo: number): string {
     switch (fondo) {
+      case 0:
+        return '#ebe6ff';
       case 3:
         return '#ffdfdf';
       case 2:
         return '#edfff6';
       default:
-        return '#fcffe2';
+        return '#e5edf9';
     }
   }
 /**********************************************************************************************************************************************/ 
@@ -316,7 +321,42 @@ obtenerComparacionPlanillas() {
     this.displayModal = false;
   }
 
+  declararPlanillaBorrador() {
+    Swal.fire({
+      title: '¿Declarar la Planilla de Aportes?',
+      text: 'Esta acción enviará la planilla a revisión.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, declarar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.planillasService
+          .actualizarEstadoAPendiente(this.idPlanilla)
+          .subscribe({
+            next: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Planilla enviada',
+                text: 'La planilla ha sido declarada como borrador.',
+              });
+              this.router.navigate(['cotizaciones/planillas-aportes']);
+            },
+            error: (err) => {
+              console.error('Error al actualizar estado:', err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo declarar la planilla.',
+              });
+            },
+          });
+      }
+    });
+  }
+
   guardarYEnviar() {
+
     for (let trabajador of this.trabajadores) {
       /* if (!trabajador.ci || !trabajador.apellido_paterno || !trabajador.nombres || 
           !trabajador.cargo || !trabajador.salario || !trabajador.fecha_ingreso || !trabajador.regional) { */
