@@ -44,6 +44,7 @@
     background-color: #f5f7fa;
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    width: max-content;
   }
   
   .list-item {
@@ -76,8 +77,8 @@
     font-size: 14px; /* Tamaño de los iconos */
   }
 
-
-  /* botones ------------------------------------------------------------------------------*/
+  /* BOTONES ------------------------------------------------------------------------------*/
+  /* botones verdes ------------------------------------------------------------------------------*/
 
   .boton1 {
     display: flex;
@@ -94,9 +95,9 @@
   
 
   .boton1:hover {
-    background-color: #61927d !important; /* Tono más oscuro */
-    transform: translateY(2px); /* Se hunde 2px */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    background-color: #61927d !important; 
+    transform: translateY(2px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
 
   }
 
@@ -115,9 +116,9 @@
   
 
   .boton2:hover {
-    background-color: #58967b !important; /* Tono más oscuro */
-    transform: translateY(2px); /* Se hunde 2px */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    background-color: #58967b !important;
+    transform: translateY(2px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
 
   }
 
@@ -135,11 +136,33 @@
   }
 
   .boton3:hover {
-    background-color: #51ca84 !important; /* Tono más oscuro */
-    transform: translateY(2px); /* Se hunde 2px */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    background-color: #51ca84 !important; 
+    transform: translateY(2px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
 
   }
+
+    /* botones OTROS ------------------------------------------------------------------------------*/
+
+    .boton4 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background-color: #777ac5; 
+  
+      padding: 10px 20px; 
+      border-radius: 4px; 
+      transition: all 0.2s ease;
+    }
+  
+    .boton4:hover {
+      background-color: #8c8fe4 !important; 
+      transform: translateY(2px); 
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+  
+    }
 
 
   /* PESTAÑAS TAB VIEW  ----------------------------------------------------------------------- */
@@ -189,5 +212,11 @@
   .p-tabview .p-tabview-nav li:nth-child(4).p-highlight .p-tabview-nav-link {
     background-color: #e6ffe6; 
     color: #28a745;
+    border: 1px solid #cfcfcf;
+  }
+
+  .p-tabview .p-tabview-nav li:nth-child(5).p-highlight .p-tabview-nav-link {
+    background-color: #fff5e6; 
+    color: #a77428;
     border: 1px solid #cfcfcf;
   }

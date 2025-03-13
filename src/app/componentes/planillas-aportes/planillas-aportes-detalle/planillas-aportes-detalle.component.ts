@@ -35,7 +35,7 @@ export class PlanillasAportesDetalleComponent implements OnInit {
   resumenData: any = null; // Para almacenar los datos del resumen
   resumenLoading = false; // Indicador de carga para el resumen
 
-
+  progreso: number = 100;
 
   regionales = [
     { label: 'LA PAZ', value: 'LA PAZ' },
@@ -66,13 +66,19 @@ export class PlanillasAportesDetalleComponent implements OnInit {
 
   // Función para seleccionar el archivo
   seleccionarArchivo(event: any) {
-    this.archivoSeleccionado = event.target.files[0];
+    const file = event.target.files[0];
+    if (file) {
+      this.archivoSeleccionado = file;
+      // Simula una carga completa
+      this.progreso = 100;
+    }
   }
 
   // Función para cerrar el modal
   cerrarModalImportar() {
     this.mostrarModalImportar = false;
     this.archivoSeleccionado = null;
+    this.progreso = 0;
   }
 
   // Función para importar la planilla
@@ -122,6 +128,8 @@ export class PlanillasAportesDetalleComponent implements OnInit {
             });
             this.cerrarModalImportar();
             this.obtenerDetalles();
+            this.obtenerResumenPlanilla();
+            this.obtenerComparacionPlanillas();
           },
           error: (err) => {
             Swal.fire({
@@ -252,7 +260,7 @@ obtenerMesAnterior(fechaActual: string): { mesAnterior: string, gestion: string 
     añoAnterior = añoActual - 1;
   }
 
-  const mesAnteriorStr = String(mesAnterior + 1).padStart(2, '0'); // Convertir a 1-based (01-12)
+  const mesAnteriorStr = String(mesAnterior + 1).padStart(2, '0'); 
   const gestionAnterior = añoAnterior.toString();
 
   console.log(`Entrada: ${fechaActual}, Mes actual (0-based): ${mesActual}, Mes anterior: ${mesAnteriorStr}, Gestión anterior: ${gestionAnterior}`);
@@ -268,9 +276,9 @@ obtenerComparacionPlanillas() {
   console.log(`Datos obtenidos: cod_patronal=${cod_patronal}, fecha_planilla=${fecha_planilla}`);
 
   // Extraer gestión y mes actual directamente de fecha_planilla
-  const [year, month] = fecha_planilla.split('T')[0].split('-'); // "2024-02-01" -> ["2024", "02", "01"]
-  const gestion = year; // "2024"
-  const mesActual = month; // "02"
+  const [year, month] = fecha_planilla.split('T')[0].split('-'); 
+  const gestion = year; 
+  const mesActual = month; 
 
   // Calcular mes anterior
   const mesAnteriorData = this.obtenerMesAnterior(fecha_planilla);
@@ -319,6 +327,9 @@ obtenerComparacionPlanillas() {
       this.trabajadores[index] = { ...this.trabajadorSeleccionado };
     }
     this.displayModal = false;
+    
+    this.obtenerResumenPlanilla();
+    this.obtenerComparacionPlanillas();
   }
 
   declararPlanillaBorrador() {
@@ -459,6 +470,7 @@ obtenerComparacionPlanillas() {
     }).then((result) => {
       if (result.isConfirmed) {
         this.eliminarDetallesPlanilla();
+        
       }
     });
   }
@@ -470,10 +482,14 @@ obtenerComparacionPlanillas() {
           icon: 'success',
           title: 'Detalles eliminados',
           text: 'Los detalles de la planilla han sido eliminados correctamente.',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            
+            window.location.reload();
+          }
         });
-        // Vaciar la lista de trabajadores manualmente
-        this.trabajadores = [];
-        this.loading = false; // Asegúrate de que el loading se desactive
+        this.trabajadores = []; 
+        this.loading = false; 
       },
       error: (err) => {
         console.error('Error al eliminar detalles:', err);
@@ -482,7 +498,7 @@ obtenerComparacionPlanillas() {
           title: 'Error',
           text: 'Hubo un problema al eliminar los detalles.',
         });
-        this.loading = false; // Asegúrate de que el loading se desactive en caso de error
+        this.loading = false; 
       },
     });
   }
@@ -596,16 +612,11 @@ obtenerComparacionPlanillas() {
           });
         }
         this.resumenLoading = false;
-      },
-      error: (err) => {
-        console.error('Error al obtener el resumen:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-            text: 'Hubo un problema al cargar los datos del resumen.',
-          });
-          this.resumenLoading = false;
-        },
+      }
       });
     }
+
+
+
+
 }

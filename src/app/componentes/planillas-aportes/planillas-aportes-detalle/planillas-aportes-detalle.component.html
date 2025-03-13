@@ -1,3 +1,4 @@
+<!-- ENCAMBEZADO DE PLANILLA ---------------------------------------------------------------------------------- -->
 <div class="grid dashboard">
   <div class="col-12 md:col-12 lg:6">
     <div class="perfil-empleador">
@@ -65,38 +66,60 @@
             <!-- N° de Trabajadores -->
             <div class="list-item">
               <span class="label">N° de Registros</span>
-              <span class="value">
-                <i class="pi pi-users"></i> {{ planillaInfo.planilla.total_trabaj }}
-              </span>
+              <ng-container *ngIf="resumenData?.planilla; else sinDatosTrabajadores">
+                <span class="value">
+                  <i class="pi pi-users"></i> {{ planillaInfo.planilla.total_trabaj }}
+                </span>
+              </ng-container>
+              <ng-template #sinDatosTrabajadores>
+                <span class="value">
+                  <i class="pi pi-users"></i> 0
+                </span>
+              </ng-template>
             </div>
-          
+
             <!-- Total Importe -->
             <div class="list-item">
               <span class="label">Total Importe</span>
-              <span class="value">
-                <i class="pi pi-money-bill"></i> {{ planillaInfo.planilla.total_importe | number:'1.2-2' }} Bs
-              </span>
+              <ng-container *ngIf="resumenData?.planilla; else sinDatosImporte">
+                <span class="value">
+                  <i class="pi pi-money-bill"></i> {{ planillaInfo.planilla.total_importe | number:'1.2-2' }} Bs
+                </span>
+              </ng-container>
+              <ng-template #sinDatosImporte>
+                <span class="value">
+                  <i class="pi pi-money-bill"></i> 0.00 Bs
+                </span>
+              </ng-template>
             </div>
           </div>
         </div>
+
         <div class="header-right">
           <div class="button-container">
 
             <button 
               pButton 
-              label="Resumen" 
-              class="p-button-info"
-              style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; width: 80px; background-color: #45acbd; " 
+              label="DS-08" 
+              class="boton4"
+              style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; width: 80px; " 
               (click)="exportarPdfrResumen()">
                 <span class="pi pi-book" style="font-size: 2rem; padding-bottom: 10px;"></span>
-                <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Descargar</span>
+                <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Formulario</span>
               </button>
 
-              
-
-
-
               <button 
+              *ngIf="planillaInfo.planilla.estado != 2 "
+              pButton 
+              label="Pago" 
+              class="boton3"
+              style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; width: 80px; " 
+              (click)="exportarPdfrResumen()">
+                <span class="pi pi-wallet" style="font-size: 2rem; padding-bottom: 10px;"></span>
+                <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Subir</span>
+              </button>
+
+<!--               <button 
               *ngIf="planillaInfo.planilla.estado === 3 || planillaInfo.planilla.estado === 0"
               pButton 
               label="Datos" 
@@ -105,9 +128,9 @@
               (click)="confirmarEliminacionDetalles()">
                 <span class="pi pi-trash" style="font-size: 2rem; padding-bottom: 10px;"></span>
                 <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Limpiar</span>
-              </button>
+              </button> -->
 
-              <button 
+<!--               <button 
               *ngIf="planillaInfo.planilla.estado === 3 || planillaInfo.planilla.estado === 0"
               pButton 
               label="Datos" 
@@ -116,11 +139,11 @@
               (click)="mostrarModalImportar = true"> 
               <span class="pi pi-upload" style="font-size: 2rem; padding-bottom: 10px;"></span>
               <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Cargar</span>
-          </button>
+          </button> -->
     
  
 
-            <button
+<!--             <button
                 *ngIf="planillaInfo.planilla.estado === 2"
                 pButton
                 label="Planilla" 
@@ -130,7 +153,7 @@
                 >
                 <span class="pi pi-file-excel" style="font-size: 2rem; padding-bottom: 10px;"></span>
                 <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;">Descargar</span>
-            </button>
+            </button> -->
             
 
             <button
@@ -172,6 +195,8 @@
   </div>
 </div>
 
+<!-- OPCIONES DE PLANILLA ---------------------------------------------------------------------------------- -->
+
 <p-tabView [style]="{ padding: '5px' , 'border': '1px solid gray'}">
   <p-tabPanel header="Planilla Declarada Mensual" leftIcon="pi pi-file" >
     
@@ -192,16 +217,58 @@
     currentPageReportTemplate="Mostrando registros del {first} al {last} de un total de {totalRecords} registros"
   >
   <ng-template pTemplate="caption">
-    <div class="flex justify-content-between flex-column sm:flex-row">
-        <div class="flex align-items-center">
-          
-            <button pButton style="border: 1px;" label="Recargar" class="p-button-outlined p-button-plain mr-2" icon="pi pi-filter-slash" (click)="recargar()"></button>
-           <!--  <button pButton style="border: 1px;" label="Exportar a Excel" class="p-button-outlined p-button-plain" icon="pi pi-file-excel" (click)="recargar()"></button> -->
+    <div class="flex justify-content-between align-items-center flex-column sm:flex-row">
+        <!-- Contenedor del buscador (izquierda) -->
+        <div class="flex align-items-center mb-2 sm:mb-0">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" #filter (input)="buscar(filter.value)" placeholder="Buscar ..." class="w-full">
+            </span>
         </div>
-        <span class="p-input-icon-left mb-2">
-            <i class="pi pi-search"></i>							
-            <input pInputText type="text" #filter (input)="buscar(filter.value)" placeholder="Buscar ..." class="w-full">
-        </span>
+
+        <!-- Contenedor de los botones (derecha) -->
+        <div class="flex align-items-center">
+            <button 
+            
+            pButton style="border: 1px;" 
+            label="Exportar PDF " 
+            class="p-button-outlined p-button-danger mr-2" 
+            icon="pi pi-file-pdf" 
+            (click)="recargar()">
+          </button>
+            <button 
+            
+            pButton style="border: 1px;" 
+            label="Exportar Excel " 
+            class="p-button-outlined p-button-success mr-2" 
+            icon="pi pi-file-excel" 
+            (click)="recargar()">
+          </button>
+            <button 
+            *ngIf="planillaInfo.planilla.estado === 3 || planillaInfo.planilla.estado === 0"
+            pButton style="border: 1px;" 
+            label="Eliminar Datos " 
+            class="p-button-outlined p-button-plain mr-2" 
+            icon="pi pi-trash" 
+            (click)="confirmarEliminacionDetalles()">
+          </button>
+            <button 
+            *ngIf="planillaInfo.planilla.estado === 3 || planillaInfo.planilla.estado === 0"
+            pButton style="border: 1px;" 
+            label="Cargar Datos " 
+            class="p-button-outlined p-button-plain mr-2" 
+            icon="pi pi-upload" 
+            (click)="mostrarModalImportar = true">
+          </button>
+            <button 
+            
+            pButton style="border: 1px;" 
+            label="Recargar" 
+            class="p-button-outlined p-button-plain " 
+            icon="pi pi-sync" 
+            (click)="recargar()">
+          </button>
+        </div>
     </div>
 </ng-template>
   <ng-template pTemplate="header">
@@ -255,114 +322,135 @@
       </div>
     </div>
     <div>
-      <div class="grid">
+      <div class="grid ">
         <!-- Sección izquierda: Información de la Planilla -->
         <div class="col-12 md:col-12">
-          <p-card  >
+          
             <div *ngIf="resumenData?.planilla" class="custom-table">
-              <table class="p-datatable p-datatable-striped w-full">
-                <tbody>
-                  <tr>
-                    <td class="font-bold text-blue-900 border-bottom-1">
-                      <i class="pi pi-building mr-2"></i> Empleador
-                    </td>
-                    <td class="border-bottom-1 text-gray-700">{{ resumenData.planilla.empresa }}</td>
-                  </tr>
-                  <tr class="surface-ground">
-                    <td class="font-bold text-blue-900 border-bottom-1">
-                      <i class="pi pi-money-bill mr-2"></i> Total Importe
-                    </td>
-                    <td class="border-bottom-1 text-gray-700">{{ resumenData.planilla.total_importe | number:'1.2-2' }} Bs</td>
-                  </tr>
-                  <tr>
-                    <td class="font-bold text-blue-900 border-bottom-1">
-                      <i class="pi pi-users mr-2"></i> Total Registros
-                    </td>
-                    <td class="border-bottom-1 text-gray-700">{{ resumenData.planilla.total_trabaj }}</td>
-                  </tr>
-                  <tr class="surface-ground">
-                    <td class="font-bold text-blue-900 border-bottom-1">
-                      <i class="pi pi-user-plus mr-2"></i> Total Altas
-                    </td>
-                    <td class="border-bottom-1 text-green-400">{{ altas.length }}</td>
-                  </tr>
-                  <tr>
-                    <td class="font-bold text-blue-900 border-bottom-1">
-                      <i class="pi pi-user-minus mr-2"></i> Total Bajas por Retiro en mes actual
-                    </td>
-                    <td class="border-bottom-1 text-pink-400">{{ bajasPorRetiro.length }}</td>
-                  </tr>
-                  <tr class="surface-ground" >
-                    <td class="font-bold text-blue-900 border-bottom-1">
-                      <i class="pi pi-exclamation-triangle mr-2"></i> Trabajador no encontrado en el mes actual
-                    </td>
-                    <td class="border-bottom-1 text-pink-400">{{ bajasNoEncontradas.length }} (Verificar)</td>
-                  </tr>
-                </tbody>
-              </table>
+                <table class="p-datatable p-datatable-striped w-full">
+                    <tbody>
+                        <!-- Empleador -->
+                        <tr>
+                            <td class="font-bold text-blue-900  px-3 " style="width: 50%;font-size: 14px;">
+                                <i class="pi pi-building mr-2"></i> Empleador
+                            </td>
+                            <td class=" text-gray-700 px-3 py-2" style="background-color: #e7fbeb;font-size: 14px;font-weight: 600;border-bottom: 1px solid #e3e3e3;">
+                                {{ resumenData.planilla.empresa }}
+                            </td>
+                        </tr>
+                        <!-- Total Importe -->
+                        <tr class="surface-ground">
+                            <td class="font-bold text-blue-900  px-3 " style="width: 50%;font-size: 14px;">
+                                <i class="pi pi-money-bill mr-2"></i> Total Importe
+                            </td>
+                            <td class=" text-gray-700 px-3 py-2" style="background-color: #e7fbeb;font-size: 14px;font-weight: 600;border-bottom: 1px solid #e3e3e3;">
+                                {{ resumenData.planilla.total_importe | number:'1.2-2' }} Bs
+                            </td>
+                        </tr>
+                        <!-- Total Registros -->
+                        <tr>
+                            <td class="font-bold text-blue-900  px-3 " style="width: 50%;font-size: 14px;">
+                                <i class="pi pi-users mr-2"></i> Total Registros
+                            </td>
+                            <td class=" text-gray-700 px-3 py-2" style="background-color: #e7fbeb;font-size: 14px;font-weight: 600;border-bottom: 1px solid #e3e3e3;">
+                                {{ resumenData.planilla.total_trabaj }}
+                            </td>
+                        </tr>
+                        <!-- Total Altas -->
+                        <tr class="surface-ground">
+                            <td class="font-bold text-blue-900  px-3 " style="width: 50%;font-size: 14px;">
+                                <i class="pi pi-user-plus mr-2"></i> Total Altas
+                            </td>
+                            <td class=" text-green-400 px-3 py-2" style="background-color: #e7fbeb;font-size: 14px;font-weight: 600;border-bottom: 1px solid #e3e3e3;">
+                                {{ altas.length }}
+                            </td>
+                        </tr>
+                        <!-- Total Bajas por Retiro en mes actual -->
+                        <tr>
+                            <td class="font-bold text-blue-900  px-3 " style="width: 50%;font-size: 14px;">
+                                <i class="pi pi-user-minus mr-2"></i> Total Bajas por Retiro en mes actual
+                            </td>
+                            <td class=" text-pink-400 px-3 py-2" style="background-color: #e7fbeb;font-size: 14px;font-weight: 600;border-bottom: 1px solid #e3e3e3;">
+                                {{ bajasPorRetiro.length }}
+                            </td>
+                        </tr>
+                        <!-- Trabajador no encontrado en el mes actual -->
+                        <tr class="surface-ground">
+                            <td class="font-bold text-blue-900  px-3 " style="width: 50%;font-size: 14px;">
+                                <i class="pi pi-exclamation-triangle mr-2"></i> Trabajador no encontrado en el mes actual
+                            </td>
+                            <td class=" text-pink-400 px-3 py-2" style="background-color: #e7fbeb;font-size: 14px;font-weight: 600;border-bottom: 1px solid #e3e3e3;">
+                                {{ bajasNoEncontradas.length }} 
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        
+            <!-- Mensaje de no datos -->
             <div *ngIf="!resumenData?.planilla" class="text-center text-gray-500 font-italic p-4 surface-50 border-round">
-              No hay datos de la planilla disponibles.
+                No hay datos de la planilla disponibles.
             </div>
-          </p-card>
+     
+        
         </div>
     
         <!-- Sección derecha: Tabla de resumen -->
         <div class="col-12 md:col-12">
-          <p-table 
-            [value]="resumenData?.resumen" 
-            [loading]="resumenLoading" 
-            [rowHover]="true" 
-            styleClass="p-datatable-striped p-datatable-gridlines" 
-            responsiveLayout="scroll"
-            [style]="{'margin-bottom': '0'}"
-            
-          >
-            <ng-template pTemplate="header">
-              <tr>
-                <th style=" background-color:#e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: left;">
-                  <i class="pi pi-map-marker mr-2"></i> Regional
-                </th>
-                <th style=" background-color:#e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: right;">
-                  <i class="pi pi-users mr-2"></i> Cantidad
-                </th>
-                <th style=" background-color:#e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: right;">
-                  <i class="pi pi-money-bill mr-2"></i> Total Ganado
-                </th>
-                <th style=" background-color:#e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563; text-align: right;">
-                  <i class="pi pi-percentage mr-2"></i> 10% del Total
-                </th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-region>
-              <tr>
-                <td style="padding: 2px; color: #374151; border-bottom: 1px solid #e5e7eb;">{{ region.regional }}</td>
-                <td style="padding: 2px; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.cantidad | number:'1.0-0' }}</td>
-                <td style="padding: 2px; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.total_ganado }}</td>
-                <td style="padding: 2px; color: #374151; border-bottom: 1px solid #e5e7eb; text-align: right;">{{ region.porcentaje_10 }}</td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="footer">
-              <tr *ngIf="resumenData?.totales" 
-                  style="background-color: #fef3c7; font-weight: 700; color: #713f12; border-top: 3px double #4b5563; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
-                <td style="padding: 2px; background-color: #e3e3e3; color: #5f5f5f; border-top: 3px double #4b5563;">
-                  <i class="pi pi-chart-bar mr-2"></i> Totales
-                </td>
-                <td style="padding: 2px; text-align: right; background-color: #e7fbeb; border-top: 3px double #4b5563;">{{ resumenData.totales.cantidad_total | number:'1.0-0' }}</td>
-                <td style="padding: 2px; text-align: right; background-color: #e7fbeb; border-top: 3px double #4b5563;">{{ resumenData.totales.total_ganado }}</td>
-                <td style="padding: 2px; text-align: right; background-color: #e7fbeb; border-top: 3px double #4b5563;">{{ resumenData.totales.porcentaje_10 }}</td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="4" style="padding: 1.5rem; text-align: center; color: #6b7280; font-style: italic; background-color: #f9fafb;">
-                  <i class="pi pi-info-circle mr-2"></i> No hay datos para mostrar.
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
+            <p-table 
+                [value]="resumenData?.resumen" 
+                [loading]="resumenLoading" 
+                [rowHover]="true" 
+                styleClass="p-datatable-striped p-datatable-gridlines"
+                responsiveLayout="scroll"
+                [style]="{'margin-bottom': '0'}"
+                class="shadow-lg border-round"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="p-3 text-left" style="background-color: #e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563;">
+                            <i class="pi pi-map-marker mr-2"></i> Regional
+                        </th>
+                        <th class="p-3 text-right" style="background-color: #e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563;">
+                            <i class="pi pi-users mr-2"></i> Cantidad
+                        </th>
+                        <th class="p-3 text-right" style="background-color: #e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563;">
+                            <i class="pi pi-money-bill mr-2"></i> Total Ganado
+                        </th>
+                        <th class="p-3 text-right" style="background-color: #e3e3e3; color: #5f5f5f; font-weight: 600; border-bottom: 2px solid #4b5563;">
+                            <i class="pi pi-percentage mr-2"></i> 10% del Total
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-region>
+                    <tr>
+                        <td class="p-3" style="color: #374151; border-bottom: 1px solid #e5e7eb;">{{ region.regional }}</td>
+                        <td class="p-3 text-right" style="color: #374151; border-bottom: 1px solid #e5e7eb;">{{ region.cantidad | number:'1.0-0' }}</td>
+                        <td class="p-3 text-right" style="color: #374151; border-bottom: 1px solid #e5e7eb;">{{ region.total_ganado }}</td>
+                        <td class="p-3 text-right" style="color: #374151; border-bottom: 1px solid #e5e7eb;">{{ region.porcentaje_10 }}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="footer">
+                    <tr *ngIf="resumenData?.totales" style="background-color: #fef3c7; font-weight: 700; color: #713f12; border-top: 3px double #4b5563;">
+                        <td class="p-3" style="background-color: #e3e3e3; color: #5f5f5f; border-top: 3px double #4b5563;">
+                            <i class="pi pi-chart-bar mr-2"></i> Totales
+                        </td>
+                        <td class="p-3 text-right" style="background-color: #e7fbeb; border-top: 3px double #4b5563;">{{ resumenData.totales.cantidad_total | number:'1.0-0' }}</td>
+                        <td class="p-3 text-right" style="background-color: #e7fbeb; border-top: 3px double #4b5563;">{{ resumenData.totales.total_ganado }}</td>
+                        <td class="p-3 text-right" style="background-color: #e7fbeb; border-top: 3px double #4b5563;">{{ resumenData.totales.porcentaje_10 }}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="4" class="p-3 text-center text-gray-500" style="background-color: #f9fafb;">
+                            <i class="pi pi-info-circle mr-2"></i> No hay datos para mostrar.
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
         </div>
-      </div>
+    </div>
+    
     </div>
     
     
@@ -570,11 +658,14 @@ currentPageReportTemplate="Mostrando registros del {first} al {last} de un total
           </ng-template>
         </p-table>
 
-    </p-tabPanel>
+  </p-tabPanel>
+  <p-tabPanel header="Planillas Adicionales" leftIcon="pi pi-file-plus">
+    <app-planillas-adicionales></app-planillas-adicionales>
+  </p-tabPanel>
 </p-tabView>
 
 
-
+<!-- EDITAR TRABAJADOR --------------------------------------------------------------------------------------------> 
 <p-dialog [(visible)]="displayModal" [modal]="true" [style]="{ width: '50vw' }">
   <ng-template pTemplate="header">
     <h2>Editar Trabajador</h2>
@@ -623,21 +714,78 @@ currentPageReportTemplate="Mostrando registros del {first} al {last} de un total
 
 
 
-
-<p-dialog [(visible)]="mostrarModalImportar" [modal]="true" header="Importar Nueva Planilla" [closable]="true" [style]="{width: '600px'}">
-  <div class="p-field">
-      <label for="archivo" class="p-d-block font-bold">Seleccionar archivo (Excel)</label>
-      <div class="file-upload-container">
-          <input type="file" id="archivo" accept=".xlsx, .xls" (change)="seleccionarArchivo($event)" class="file-upload-input" #fileInput hidden />
-          <button type="button" class="p-button p-button-secondary" (click)="fileInput.click()">
-              <i class="pi pi-upload"></i> Seleccionar Archivo
-          </button>
+<!-- MODAL DE IMPORTAR PLANILLA --------------------------------------------------------------------------------------------> 
+<p-dialog
+  [(visible)]="mostrarModalImportar"
+  [modal]="true"
+  header="Importar Nueva Planilla"
+  [closable]="true"
+  [style]="{ width: '600px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <!-- Contenido del diálogo -->
+  <div class="p-fluid">
+    <div class="p-field">
+      <label for="archivo" class="p-d-block font-bold mb-2" style="color: #2c3e50;">Seleccionar archivo (Excel)</label>
+      <div class="file-upload-container p-d-flex p-ai-center" style=" padding: 1rem; border-radius: 6px; background-color: #f9f9f9;">
+        <input
+          type="file"
+          id="archivo"
+          accept=".xlsx, .xls"
+          (change)="seleccionarArchivo($event)"
+          class="file-upload-input"
+          #fileInput
+          hidden
+        />
+        <button
+          type="button"
+          class="p-button p-button-outlined p-button-primary"
+          (click)="fileInput.click()"
+          style="margin-right: 1rem;"
+        >
+          <i class="pi pi-upload" style="margin-right: 0.5rem;"></i> Seleccionar Archivo
+        </button>
+        <span *ngIf="archivoSeleccionado" class="file-name" style="color: #27ae60; font-weight: 500;">
+          
+        </span>
+        <span *ngIf="!archivoSeleccionado" class="file-name" style="color: #7f8c8d;">
+          Ningún archivo seleccionado
+        </span>
       </div>
-      <p *ngIf="archivoSeleccionado" class="p-mt-2"><strong>Archivo seleccionado:</strong> {{ archivoSeleccionado.name }}</p>
+      <small class="p-d-block p-mt-2" style="color: #7f8c8d;">
+        Formatos admitidos: .xlsx, .xls
+      </small>
+    </div>
+
+    <!-- Barra de progreso simulada -->
+    <div *ngIf="archivoSeleccionado" class="p-mt-4">
+      <p-progressBar
+        [value]="progreso"
+        [showValue]="false"
+        [ngStyle]="{ 'height': '18px', 'border-radius': '4px' }"
+      ></p-progressBar>
+      <p class="p-text-center p-mt-2" style="color: #27ae60; font-weight: 500;">
+        <i class="pi pi-check-circle" style="margin-right: 0.5rem;"></i> Archivo cargado correctamente - {{ archivoSeleccionado.name }}
+      </p>
+    </div>
   </div>
 
-  <div class="p-d-flex p-jc-end p-mt-3">
-      <button pButton label="Cancelar" class="p-button-text p-mr-2" (click)="cerrarModalImportar()"></button>
-      <button pButton label="Subir Planilla" class="p-button-success" (click)="importarNuevaPlanilla()" [disabled]="!archivoSeleccionado"></button>
+  <!-- Footer del diálogo -->
+  <div class="p-dialog-footer p-d-flex p-jc-end p-mt-4">
+    <button
+      pButton
+      label="Cancelar"
+      class="p-button-outlined p-button-danger p-mr-2"
+      (click)="cerrarModalImportar()"
+    ></button>
+    <button
+      pButton
+      label="Subir Datos"
+      class="p-button-outlined p-button-success"
+      (click)="importarNuevaPlanilla()"
+      [disabled]="!archivoSeleccionado"
+    ></button>
   </div>
 </p-dialog>
+
