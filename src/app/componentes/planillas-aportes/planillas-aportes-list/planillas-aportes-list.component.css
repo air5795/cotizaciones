@@ -111,20 +111,7 @@
 
 
 
-.semaforo-container {
-    display: flex;
-    align-items: center; /* Alinea verticalmente los elementos */
-    justify-content: center; /* Centra horizontalmente los elementos */
-    gap: 10px; /* Ajusta la separación entre el semáforo y las etiquetas */
-  }
-  
-  .semaforo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-  }
-  
+
   .circle {
     width: 20px;
     height: 20px;
@@ -165,36 +152,7 @@
   }
 
 
-  .estado-btn {
-    padding: 0.25rem 0.5rem; /* Ajusta el padding para que sea compacto */
-    border: 1px solid gray;/* Quita el borde */
-    border-radius: 4px; /* Bordes redondeados */
-    font-size: 12px; /* Tamaño de fuente */
-    font-weight: 600; /* Grosor de la fuente */
-    color: white; /* Texto en blanco */
-    cursor: default; /* Evita que el cursor cambie a pointer */
-  }
 
-  .borrador {
-    background-color: #f0f0f0; /* Gris claro */
-    color: #333; /* Texto oscuro para mejor contraste */
-  }
-  
-  /* Estilo para el botón "Pendiente" */
-  .pendiente {
-    background-color: #d7f1ff; /* Amarillo claro */
-    color: #547485; /* Texto oscuro para mejor contraste */
-  }
-  
-  /* Estilo para el botón "Aprobado" */
-  .aprobado {
-    background-color: rgb(78, 214, 146); /* Verde */
-  }
-  
-  /* Estilo para el botón "Observado" */
-  .observado {
-    background-color: #f59999; /* Rojo claro */
-  }
 
 
 

@@ -49,6 +49,7 @@ export class PlanillasAportesDetalleComponent implements OnInit {
     { label: 'CHUQUISACA', value: 'CHUQUISACA' },
   ];
 
+  
   constructor(
     private route: ActivatedRoute,
     private planillasService: PlanillasAportesService,

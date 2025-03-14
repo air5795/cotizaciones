@@ -92,6 +92,8 @@
                 </span>
               </ng-template>
             </div>
+
+            
           </div>
         </div>
 
@@ -108,7 +110,7 @@
                 <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Formulario</span>
               </button>
 
-              <button 
+<!--               <button 
               *ngIf="planillaInfo.planilla.estado != 2 "
               pButton 
               label="Pago" 
@@ -117,7 +119,7 @@
               (click)="exportarPdfrResumen()">
                 <span class="pi pi-wallet" style="font-size: 2rem; padding-bottom: 10px;"></span>
                 <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Subir</span>
-              </button>
+              </button> -->
 
 <!--               <button 
               *ngIf="planillaInfo.planilla.estado === 3 || planillaInfo.planilla.estado === 0"
@@ -232,7 +234,7 @@
             
             pButton style="border: 1px;" 
             label="Exportar PDF " 
-            class="p-button-outlined p-button-danger mr-2" 
+            class="p-button-outlined p-button-plain mr-2" 
             icon="pi pi-file-pdf" 
             (click)="recargar()">
           </button>
@@ -240,7 +242,7 @@
             
             pButton style="border: 1px;" 
             label="Exportar Excel " 
-            class="p-button-outlined p-button-success mr-2" 
+            class="p-button-outlined p-button-plain mr-2" 
             icon="pi pi-file-excel" 
             (click)="recargar()">
           </button>
@@ -512,8 +514,11 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="10" style="text-align: center; padding: 8px;">
-        <strong>No hay bajas por fecha de retiro.</strong>
+      <td colspan="9" style="text-align: center; padding: 20px; background-color: #fff;">
+        <div class="no-data-message">
+          <i class="pi pi-info-circle" style="font-size: 2.5rem; color: #888;"></i>
+          <p style="margin-top: 10px; font-size: 1.2rem; color: #888;">No hay bajas por fecha de retiro.</p>
+        </div>
       </td>
     </tr>
   </ng-template>
@@ -575,13 +580,16 @@ currentPageReportTemplate="Mostrando registros del {first} al {last} de un total
 </tr>
 </ng-template>
 
-<!-- Mensaje cuando no hay datos -->
+
 <ng-template pTemplate="emptymessage">
-<tr>
-  <td colspan="10" style="text-align: center; padding: 8px;">
-    <strong>No hay datos encontrados.</strong>
-  </td>
-</tr>
+  <tr>
+    <td colspan="9" style="text-align: center; padding: 20px; background-color: #fff;">
+      <div class="no-data-message">
+        <i class="pi pi-info-circle" style="font-size: 2.5rem; color: #888;"></i>
+        <p style="margin-top: 10px; font-size: 1.2rem; color: #888;">No hay datos encontrados.</p>
+      </div>
+    </td>
+  </tr>
 </ng-template>
 </p-table>
 
@@ -649,17 +657,24 @@ currentPageReportTemplate="Mostrando registros del {first} al {last} de un total
           </ng-template>
     
           <!-- Mensaje cuando no hay datos -->
+    
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="7" style="text-align: center; padding: 8px;">
-                <strong>No hay nuevas altas en esta planilla.</strong>
+              <td colspan="9" style="text-align: center; padding: 20px; background-color: #fff;">
+                <div class="no-data-message">
+                  <i class="pi pi-info-circle" style="font-size: 2.5rem; color: #888;"></i>
+                  <p style="margin-top: 10px; font-size: 1.2rem; color: #888;">No hay nuevas altas en esta planilla.</p>
+                </div>
               </td>
             </tr>
           </ng-template>
         </p-table>
 
   </p-tabPanel>
-  <p-tabPanel header="Planillas Adicionales" leftIcon="pi pi-file-plus">
+  <p-tabPanel header="Pagos" leftIcon="pi pi-money-bill">
+    <app-pagos-aportes [idPlanilla]="idPlanilla"></app-pagos-aportes>
+  </p-tabPanel>
+  <p-tabPanel header="Planillas Adicionales" leftIcon="pi pi-plus">
     <app-planillas-adicionales></app-planillas-adicionales>
   </p-tabPanel>
 </p-tabView>

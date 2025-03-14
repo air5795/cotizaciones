@@ -1,11 +1,12 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { HashLocationStrategy, LocationStrategy, registerLocaleData } from '@angular/common';
+
 
 // PrimeNG Components for demos
 import { AccordionModule } from 'primeng/accordion';
@@ -130,7 +131,11 @@ import { PlanillasAportesAprobarComponent } from './componentes/planillas-aporte
 import { PlanillasAportesDetalleAprobarComponent } from './componentes/planillas-aportes/planillas-aportes-detalle-aprobar/planillas-aportes-detalle-aprobar.component';
 import { HistorialAportesComponent } from './componentes/planillas-aportes/historial-aportes/historial-aportes.component';
 import { PlanillasAdicionalesComponent } from './componentes/planillas-aportes/planillas-adicionales/planillas-adicionales.component';
+import { PagosAportesComponent } from './componentes/planillas-aportes/pagos-aportes/pagos-aportes.component';
+import { SafeUrlPipe } from './pipes/safe-url.pipe';
+import localeEs from '@angular/common/locales/es';
 
+registerLocaleData(localeEs);
 
 @NgModule({
   imports: [
@@ -254,9 +259,11 @@ import { PlanillasAdicionalesComponent } from './componentes/planillas-aportes/p
     PlanillasAportesDetalleAprobarComponent,
     HistorialAportesComponent,
     PlanillasAdicionalesComponent,
+    PagosAportesComponent,
+    SafeUrlPipe,
   ],
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, CountryService, CustomerService, EventService, IconService, NodeService,
-    PhotoService, ProductService, MenuService , MessageService],
+    PhotoService, ProductService, MenuService , MessageService , { provide: LOCALE_ID, useValue: 'es' } ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

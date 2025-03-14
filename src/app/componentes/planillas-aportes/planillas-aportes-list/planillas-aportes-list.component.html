@@ -95,12 +95,14 @@ class="tabla-centrada"
       <tr>
         
         <th>N° de Comprobante</th>
-        <th>Fecha Declarada</th>
         <th>Mes</th>
         <th>Gestión</th>
-        <th>Total trabajadores</th>
+        <th>Total Regitros </th>
         <th >Total importe</th>
-        <th>Estado</th>
+        <th>Fecha Declarada</th>
+        <th style="width: 80px;">Planilla Declarada</th>
+        <th style="width: 80px;">Planilla Pagada</th>
+        <th style="width: 120px;">Estado</th>
         <th>Acciones</th>
       </tr>
     </ng-template>
@@ -108,14 +110,7 @@ class="tabla-centrada"
      
     <tr>
     <td>COM-{{ planilla.com_nro }}</td>
-    <td>
-      <span *ngIf="planilla.fecha_declarada; else sinFecha">
-        {{ planilla.fecha_declarada | date: 'dd/MM/yyyy' }}
-      </span>
-      <ng-template #sinFecha>
-        <span style="color: red;"> No Declarado</span>
-      </ng-template>
-    </td>
+    
     <td>{{ planilla.mes }}</td> 
     <td>{{ planilla.gestion }}</td> 
     <td style="text-align: center;">
@@ -126,22 +121,53 @@ class="tabla-centrada"
     <td style="background-color: #f3fff7;">
       <span>{{ planilla.total_importe | number:'1.2-2' }} Bs</span>
     </td>
-    <td style="width: 200px; text-align: center;">
-        <div class="semaforo-container">
-          <!-- <div class="semaforo">
-            <span [class.purple]="planilla.estado === 0" [class.gray]="planilla.estado !== 0" class="circle"></span>
-            <span [class.blue]="planilla.estado === 1" [class.gray]="planilla.estado !== 1" class="circle"></span>
-            <span [class.red]="planilla.estado === 3" [class.gray]="planilla.estado !== 3" class="circle"></span>
-            <span [class.green]="planilla.estado === 2" [class.gray]="planilla.estado !== 2" class="circle"></span>
-          </div> -->
-          <!-- Botones de estado -->
-          <div class="label-container">
-            <button *ngIf="planilla.estado === 0" class="estado-btn borrador" style="width: 170px;">BORRADOR</button>
-            <button *ngIf="planilla.estado === 1" class="estado-btn pendiente" style="width: 170px;">PLANILLA PRESENTADA</button>
-            <button *ngIf="planilla.estado === 2" class="estado-btn aprobado" style="width: 170px;">PLANILLA APROBADA</button>
-            <button *ngIf="planilla.estado === 3" class="estado-btn observado" style="width: 170px;">PLANILLA OBSERVADA</button>
-          </div>
-        </div>
+    <td>
+      <span *ngIf="planilla.fecha_declarada; else sinFechad"> 
+        <span style="color: green;">
+          {{ planilla.fecha_declarada | date: 'd \'de\' MMMM \'de\' yyyy' }}
+        </span>
+      </span>
+      <ng-template #sinFechad>
+        <span style="color: red;">
+          <i class="pi pi-ban check-icon red-x"></i> 
+        </span>
+      </ng-template>
+
+    
+    </td>
+    <td>
+      <span *ngIf="planilla.fecha_declarada; else sinFecha"> 
+        <span style="color: green;">
+          <i class="pi pi-check check-icon green-check"></i> 
+        </span>
+      </span>
+      <ng-template #sinFecha>
+        <span style="color: red;">
+          <i class="pi pi-times check-icon red-x"></i> 
+        </span>
+      </ng-template>
+    </td>
+    <td>
+      <span *ngIf="planilla.fecha_pago; else sinPago">
+        <span style="color: green;">
+          <i class="pi pi-check check-icon green-check"></i> 
+        </span>
+      </span>
+      <ng-template #sinPago>
+        <span style="color: red;">
+          <i class="pi pi-times check-icon red-x"></i> 
+        </span>
+      </ng-template>
+    </td>
+    <td style=" text-align: center;">
+
+         
+            <button *ngIf="planilla.estado === 0" class="estado-btn borrador" >BORRADOR</button>
+            <button *ngIf="planilla.estado === 1" class="estado-btn pendiente" >PRESENTADO</button>
+            <button *ngIf="planilla.estado === 2" class="estado-btn aprobado" >APROBADO</button>
+            <button *ngIf="planilla.estado === 3" class="estado-btn observado" >OBSERVADO</button>
+       
+        
       </td>
     <td>
         <button 
@@ -155,7 +181,7 @@ class="tabla-centrada"
 
     </td>
   </tr>
-</ng-template>
+    </ng-template>
       
       
       
@@ -253,7 +279,7 @@ class="tabla-centrada"
                   <td>{{ trabajador['Apellido Materno'] }}</td>
                   <td>{{ trabajador['Nombres'] }}</td>
                   <td>{{ trabajador['Cargo'] }}</td>
-                  <td>Bs {{ trabajador['Haber Básico'] | number:'1.2-2' }}</td>
+                  <td>{{ trabajador['Haber Básico'] | number:'1.2-2' }}</td>
                   <td>{{ trabajador['Fecha de ingreso'] | date: 'dd/MM/yyyy ' }}</td>
                   <td>{{ trabajador['Fecha de retiro'] | date: 'dd/MM/yyyy ' }}</td>
                   <td>{{ trabajador['regional'] }}</td>

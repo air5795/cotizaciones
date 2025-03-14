@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PagoAporte } from '../../models/pago-aporte.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,10 @@ import { environment } from '../../../environments/environment';
 export class PlanillasAportesService {
 
   constructor(private http: HttpClient) {}
+
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* PLANILLAS MENSUALES DE APORTES ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
   subirPlanilla(archivo: File, codPatronal: string, mes: string, empresa: string, gestion: string): Observable<any> {
     const formData = new FormData();
@@ -120,7 +125,35 @@ export class PlanillasAportesService {
     return this.http.get(`${environment.url}planillas_aportes/datos-planilla/${id_planilla}`);
   }
 
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* PAGOS PLANILLAS MENSUALES DE APORTES ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
+  // 1. Crear un pago con imagen
+  createPago(pagoData: any, file: File): Observable<PagoAporte> {
+    const formData = new FormData();
+    formData.append('id_planilla_aportes', pagoData.id_planilla_aportes);
+    formData.append('fecha_pago', pagoData.fecha_pago);
+    formData.append('monto_pagado', pagoData.monto_pagado);
+    formData.append('metodo_pago', pagoData.metodo_pago);
+    formData.append('comprobante_pago', pagoData.comprobante_pago);
+    formData.append('observaciones', pagoData.observaciones);
+    if (file) {
+      formData.append('foto_comprobante', file, file.name); 
+    }
+
+    return this.http.post<any>(`${environment.url}pagos-aportes/create`, formData);
+  }
+
+// 2. Listar todos los pagos
+findAll(): Observable<PagoAporte[]> {
+  return this.http.get<PagoAporte[]>(`${environment.url}pagos-aportes`);
+}
+
+// 3. Listar pagos por id_planilla_aportes (ajustado para devolver una lista)
+findByIdPlanilla(id: number): Observable<PagoAporte[]> {
+  return this.http.get<PagoAporte[]>(`${environment.url}pagos-aportes/by-id/${id}`);
+}
   
   
   
