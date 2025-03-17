@@ -54,8 +54,12 @@
             <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.aporte_actualizado | currency:'BOB' }}</td>
             <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.monto_actualizado | currency:'BOB' }}</td>
             <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.multa_no_presentacion | currency:'BOB' }}</td>
-            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #feffaf;">{{ planilla.fecha_declarada | date:'dd/MM/yyyy' }}</td>
-            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #cfffdd;">{{ planilla.fecha_pago | date:'dd/MM/yyyy' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #feffaf;">
+              {{ planilla.fecha_declarada | date:'dd/MM/yyyy ' : '-0400' }}
+            </td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #cfffdd;">
+              {{ planilla.fecha_pago | date:'dd/MM/yyyy ' : '-0400' }}
+            </td>
             <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.dias_retraso }}</td>
             <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.intereses | currency:'BOB' }}</td>
             <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.multa_sobre_intereses | currency:'BOB' }}</td>
