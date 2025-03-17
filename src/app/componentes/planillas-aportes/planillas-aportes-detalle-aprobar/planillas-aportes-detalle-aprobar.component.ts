@@ -19,10 +19,10 @@ export class PlanillasAportesDetalleAprobarComponent {
     displayModal = false;
     trabajadorSeleccionado: any = {};
     planillaInfo: any = {};
-
     estadoSeleccionado!: number;
     observaciones!: string;
-    items: MenuItem[];
+    resumenData: any = null;
+    resumenLoading = false;
 
     
   
@@ -39,152 +39,40 @@ export class PlanillasAportesDetalleAprobarComponent {
     ];
 
     estados = [
-      { label: 'Aprobado', value: 2 },
-      { label: 'Observado', value: 3 }
+      { label: 'APROBAR PLANILLA', value: 2 }/* ,
+      { label: 'Observado', value: 3 } */
     ];
 
     altas: any[] = [];
-    bajas: any[] = [];
+    bajasNoEncontradas: any[] = [];
+    bajasPorRetiro: any[] = []; 
 
     displayPdfModal: boolean = false;
     pdfSrc: string = '';
 
 
-  totalRegistros: number = 0;
-  pagina: number = 0;
-  limite: number = 15;
-  busqueda: string = '';
+    pagina: number = 1;
+    limite: number = 15;
+    total: number = 0;
+    busqueda: string = '';
     
   
     constructor(
       private route: ActivatedRoute, 
       private planillasService: PlanillasAportesService,
-      private router: Router) {
-      this.items = [
-        {
-          label: 'RESUMEN',
-          icon: 'pi pi-file-pdf',
-          command: () => {
-            this.exportarPdfrResumen();
-          }
-        },
-        {
-          label: 'BAJAS DETECTADAS',
-          icon: 'pi pi-file-pdf',
-          command: () => {
-            this.exportarPdf();
-          }
-        },
-        {
-          label: 'PLANILLA DECLARADA',
-          icon: 'pi pi-file-excel',
-          command: () => {
-            this.exportarExcel();
-          }
-        },
-        {
-          label: 'VALIDAR',
-          icon: 'pi pi-pencil',
-          command: () => {
-            this.mostrarModal();
-          }
-        }
-      ];
+      private router: Router
+    ) {
     }
   
     ngOnInit(): void {
       this.idPlanilla = Number(this.route.snapshot.paramMap.get('id'));
       this.obtenerDetalles();
       this.obtenerInformacionPlanilla().then(() => {
-        this.obtenerComparacionPlanillas(); 
+        this.obtenerComparacionPlanillas();
+        this.obtenerResumenPlanilla(); 
       });
     }
 
-    getColorEstado(estado: number): string {
-      switch (estado) {
-        case 3:
-          return '#ff4545'; 
-        case 2:
-          return '#059b89'; 
-        default:
-          return '#bdb21c'; 
-      }
-    }
-  
-    getFondoEstado(fondo: number): string {
-      switch (fondo) {
-        case 3:
-          return '#ffdfdf'; 
-        case 2:
-          return '#edfff6'; 
-        default:
-          return '#fcffe2'; 
-      }
-    }
-
-    obtenerMesAnterior(fechaActual: string): { mesAnterior: string, gestion: string } | null {
-      const [year, month] = fechaActual.split('T')[0].split('-'); 
-      const añoActual = parseInt(year); 
-      const mesActual = parseInt(month) - 1; 
-    
-      let añoAnterior = añoActual;
-      let mesAnterior = mesActual - 1; 
-    
-      if (mesAnterior < 0) {
-        mesAnterior = 11; 
-        añoAnterior = añoActual - 1;
-      }
-    
-      const mesAnteriorStr = String(mesAnterior + 1).padStart(2, '0'); // Convertir a 1-based (01-12)
-      const gestionAnterior = añoAnterior.toString();
-    
-      console.log(`Entrada: ${fechaActual}, Mes actual (0-based): ${mesActual}, Mes anterior: ${mesAnteriorStr}, Gestión anterior: ${gestionAnterior}`);
-    
-      return { mesAnterior: mesAnteriorStr, gestion: gestionAnterior };
-    }
-    
-    
-
-    obtenerComparacionPlanillas() {
-      if (!this.planillaInfo.planilla) return;
-    
-      const { cod_patronal, fecha_planilla } = this.planillaInfo.planilla;
-      console.log(`Datos obtenidos: cod_patronal=${cod_patronal}, fecha_planilla=${fecha_planilla}`);
-    
-      // Extraer gestión y mes actual directamente de fecha_planilla
-      const [year, month] = fecha_planilla.split('T')[0].split('-'); // "2024-02-01" -> ["2024", "02", "01"]
-      const gestion = year; // "2024"
-      const mesActual = month; // "02"
-    
-      // Calcular mes anterior
-      const mesAnteriorData = this.obtenerMesAnterior(fecha_planilla);
-    
-      if (!mesAnteriorData) {
-        console.warn("El mes anterior no fue calculado correctamente.");
-        return;
-      }
-    
-      const { mesAnterior } = mesAnteriorData;
-    
-      console.log(`Llamando a compararPlanillas con: 
-        cod_patronal=${cod_patronal}, 
-        gestion=${gestion}, 
-        mesAnterior=${mesAnterior}, 
-        mesActual=${mesActual}`);
-    
-      this.planillasService.compararPlanillas(cod_patronal, gestion, mesAnterior, mesActual).subscribe({
-        next: (data) => {
-          console.log("Respuesta del backend:", data);
-          this.altas = data.altas;
-          this.bajas = data.bajas;
-        },
-        error: (err) => {
-          console.error("Error al comparar planillas:", err);
-        }
-      });
-    }
-    
-  
     obtenerInformacionPlanilla(): Promise<void> {
       return new Promise((resolve, reject) => {
         this.planillasService.getPlanillaId(this.idPlanilla).subscribe({
@@ -209,22 +97,150 @@ export class PlanillasAportesDetalleAprobarComponent {
         });
       });
     }
-  
-    
-  
-    obtenerDetalles() {
-      this.planillasService.getPlanillaDetalle(this.idPlanilla).subscribe({
+
+/* OBTENER DETALLES BUSQUEDA Y PAGINACION *************************************************************************************************** */
+
+  obtenerDetalles() {
+    this.loading = true;
+    this.planillasService
+      .getPlanillaDetalle(
+        this.idPlanilla,
+        this.pagina,
+        this.limite,
+        this.busqueda
+      )
+      .subscribe({
         next: (data) => {
-          this.trabajadores = data.trabajadores;
+          this.trabajadores = data.trabajadores || [];
+          this.total = data.total || 0;
           this.loading = false;
-          console.log('Detalles de la planilla:', this.trabajadores);
+          console.log('Datos recibidos:', data);
+          console.log('Página actual:', this.pagina);
+          console.log('Límite actual:', this.limite);
+          console.log('Total de registros:', this.total);
         },
         error: (err) => {
           console.error('Error al obtener detalles:', err);
           this.loading = false;
-        }
+        },
       });
+  }
+
+  onPageChange(event: any) {
+    this.pagina = Math.floor(event.first / event.rows) + 1;
+    this.limite = event.rows;
+    this.obtenerDetalles();
+  }
+
+  buscar(value: string): void {
+    this.busqueda = value.trim();
+    this.pagina = 1; 
+    this.obtenerDetalles();
+  }
+
+  recargar() {
+    this.busqueda = ''; 
+    this.pagina = 1; 
+    console.log('Búsqueda después de recargar:', this.busqueda);  
+    this.obtenerDetalles(); 
+  }
+
+/************************************************************************************************************************************************ */
+/* colores de estado *********************************************************************************************************************** */
+getColorEstado(estado: number): string {
+  switch (estado) {
+    case 3:
+      return '#ff4545';
+    case 0:
+      return '#b769fb';
+    case 2:
+      return '#059b89';
+    default:
+      return '#558fbb';
+  }
+}
+
+getFondoEstado(fondo: number): string {
+  switch (fondo) {
+    case 0:
+      return '#ebe6ff';
+    case 3:
+      return '#ffdfdf';
+    case 2:
+      return '#edfff6';
+    default:
+      return '#e5edf9';
+  }
+}
+
+/**********************************************************************************************************************************************/ 
+/* BAJAS Y ALTAS ******************************************************************************************************************************/
+
+
+obtenerMesAnterior(fechaActual: string): { mesAnterior: string, gestion: string } | null {
+  const [year, month] = fechaActual.split('T')[0].split('-'); 
+  const añoActual = parseInt(year); 
+  const mesActual = parseInt(month) - 1; 
+
+  let añoAnterior = añoActual;
+  let mesAnterior = mesActual - 1; 
+
+  if (mesAnterior < 0) {
+    mesAnterior = 11; 
+    añoAnterior = añoActual - 1;
+  }
+
+  const mesAnteriorStr = String(mesAnterior + 1).padStart(2, '0'); 
+  const gestionAnterior = añoAnterior.toString();
+
+  console.log(`Entrada: ${fechaActual}, Mes actual (0-based): ${mesActual}, Mes anterior: ${mesAnteriorStr}, Gestión anterior: ${gestionAnterior}`);
+
+  return { mesAnterior: mesAnteriorStr, gestion: gestionAnterior };
+}
+
+
+obtenerComparacionPlanillas() {
+  if (!this.planillaInfo.planilla) return;
+
+  const { cod_patronal, fecha_planilla } = this.planillaInfo.planilla;
+  console.log(`Datos obtenidos: cod_patronal=${cod_patronal}, fecha_planilla=${fecha_planilla}`);
+
+  // Extraer gestión y mes actual directamente de fecha_planilla
+  const [year, month] = fecha_planilla.split('T')[0].split('-'); 
+  const gestion = year; 
+  const mesActual = month; 
+
+  // Calcular mes anterior
+  const mesAnteriorData = this.obtenerMesAnterior(fecha_planilla);
+
+  if (!mesAnteriorData) {
+    console.warn("El mes anterior no fue calculado correctamente.");
+    return;
+  }
+
+  const { mesAnterior } = mesAnteriorData;
+
+  console.log(`Llamando a compararPlanillas con: 
+    cod_patronal=${cod_patronal}, 
+    gestion=${gestion}, 
+    mesAnterior=${mesAnterior}, 
+    mesActual=${mesActual}`);
+
+  this.planillasService.compararPlanillas(cod_patronal, gestion, mesAnterior, mesActual).subscribe({
+    next: (data) => {
+      console.log("Respuesta del backend:", data);
+      this.altas = data.altas;
+      this.bajasNoEncontradas = data.bajas.noEncontradas; // Bajas por trabajador no encontrado
+      this.bajasPorRetiro = data.bajas.porRetiro; // Bajas por fecha de retiro
+    },
+    error: (err) => {
+      console.error("Error al comparar planillas:", err);
     }
+  });
+}
+
+   
+    
 
     mostrarModal() {
       this.displayModal = true;
@@ -232,37 +248,43 @@ export class PlanillasAportesDetalleAprobarComponent {
 
 
     guardarEstado() {
-      this.planillasService.actualizarEstadoPlanilla(this.idPlanilla, this.estadoSeleccionado, this.observaciones).subscribe({
-        next: (response) => {
-          this.displayModal = false; // Cierra el modal antes de mostrar la alerta
-          setTimeout(() => { // Espera a que se cierre antes de mostrar la alerta
-            Swal.fire({
-              icon: 'success',
-              title: 'Estado actualizado',
-              text: response.mensaje,
-              confirmButtonText: 'Ok',
-              customClass: {
-                popup: 'swal2-custom-zindex' // Clase personalizada
-              }
-            }).then(() => {
-              this.router.navigate(['cotizaciones/aprobar-planillas-aportes']);
-              
-            });
-          }, 100); // Pequeño delay para evitar solapamientos
-        },
-        error: (err) => {
-          this.displayModal = false;
-          setTimeout(() => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'No se pudo actualizar el estado de la planilla',
-              confirmButtonText: 'Ok',
-              customClass: {
-                popup: 'swal2-custom-zindex'
-              }
-            });
-          }, 100);
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Este proceso es irreversible. ¿Estás seguro de validar la planilla?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, validar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.planillasService.actualizarEstadoPlanilla(this.idPlanilla, 2, this.observaciones).subscribe({
+            next: (response) => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Estado actualizado',
+                text: response.mensaje,
+                confirmButtonText: 'Ok',
+                customClass: {
+                  popup: 'swal2-custom-zindex'
+                }
+              }).then(() => {
+                this.router.navigate(['cotizaciones/historial-aportes']);
+              });
+            },
+            error: (err) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo actualizar el estado de la planilla',
+                confirmButtonText: 'Ok',
+                customClass: {
+                  popup: 'swal2-custom-zindex'
+                }
+              });
+            }
+          });
         }
       });
     }
@@ -420,6 +442,27 @@ export class PlanillasAportesDetalleAprobarComponent {
         }
       });
     }
+
+      // resumen por regionales ----------------------------------------------------------------------------------------------------
+    
+      obtenerResumenPlanilla() {
+        this.resumenLoading = true;
+        this.planillasService.obtenerDatosPlanillaPorRegional(this.idPlanilla).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.resumenData = response.data;
+              console.log('Datos del resumen:', this.resumenData);
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'No se pudieron obtener los datos del resumen.',
+              });
+            }
+            this.resumenLoading = false;
+          }
+          });
+        }
     
     
 

@@ -1,0 +1,77 @@
+<!-- src/app/components/liquidaciones-aportes/liquidaciones-aportes.component.html -->
+<div class="container">
+    <div style="display: flex; align-items: center; justify-content: space-between;  background-color: #e3e3e3; padding: 5px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="pi pi-calculator" style="color: #917d61; font-size: 1.5rem;"></i>
+          <span style="font-size: 1.25rem; font-weight: bold; color: #5f5f5f;">Liquidacion de Aportes Devengados </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button 
+          pButton 
+          style="border: 1px;" 
+          label="Subir Pago" 
+          class="p-button-outlined p-button-primary mr-2" 
+          icon="pi pi-plus" 
+          >
+      </button>
+          
+          
+        </div>
+      </div>
+  
+    <!-- Tabla para mostrar los resultados -->
+    <div *ngIf="planilla" class="container">
+      <p-table 
+      [value]="[planilla]" 
+      styleClass=" p-datatable-striped"
+      [style]="{'font-size': '12px', 'border': '1px solid #dee2e6'}"
+      responsiveLayout="scroll"
+      >
+        <ng-template pTemplate="header">
+          <tr style="padding: 20px; ">
+
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">SALARIO COTIZABLE</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">APORTE 10%</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">UFV DIA OBLIG. FORMAL</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">UFV  DIA PRESENTACION</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">AP. PATRONAL ACTUALIZADO</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">MONTO ACTUALIZADO</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">1% MULTA POR LA  NO PRESENTACION PLANILLA</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">FECHA PRESENTACION OFICIAL</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">FECHA DE DEPOSITO O PRESENTACION</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">DIAS DE RETRASO</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">INTERES</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">MULTAS S/INT.10%</th>
+            <th style="text-align: center; padding: 20px; border: 1px solid #dee2e6; ">TOTAL  A CANCELAR</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-planilla>
+          <tr>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.total_importe | currency:'BOB' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.aporte_10 | currency:'BOB' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #feffaf;">{{ planilla.ufv_dia_formal }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #cfffdd;">{{ planilla.ufv_dia_presentacion }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.aporte_actualizado | currency:'BOB' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.monto_actualizado | currency:'BOB' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.multa_no_presentacion | currency:'BOB' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #feffaf;">{{ planilla.fecha_declarada | date:'dd/MM/yyyy' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #cfffdd;">{{ planilla.fecha_pago | date:'dd/MM/yyyy' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.dias_retraso }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.intereses | currency:'BOB' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.multa_sobre_intereses | currency:'BOB' }}</td>
+            <td style="text-align: center; padding: 20px; border: 1px solid #dee2e6; background-color: #fff5e6;">{{ planilla.total_a_cancelar | currency:'BOB' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  
+    <!-- Mostrar mensaje de error si no hay datos -->
+    <div *ngIf="errorMessage && !planilla" class="mt-3">
+        <div style="text-align: center; padding: 20px; background-color: #fff;">
+        <div class="no-data-message">
+            <i class="pi pi-info-circle" style="font-size: 2.5rem; color: #888;"></i>
+            <p style="margin-top: 10px; font-size: 1.2rem; color: #888;">La planilla no tiene el pago realizado por tanto no se puede realizar el calculo de su liquidación </p>
+          </div>
+        </div>
+    </div>
+  </div>

@@ -226,6 +226,11 @@
     color: #a77428;
     border: 1px solid #cfcfcf;
   }
+  .p-tabview .p-tabview-nav li:nth-child(7).p-highlight .p-tabview-nav-link {
+    background-color: #e6f8ff; 
+    color: #2894a7;
+    border: 1px solid #cfcfcf;
+  }
 
 
 
@@ -242,7 +247,7 @@
   }
 
   .borrador {
-    background-color: #f0f0f0; 
+    background-color: #ebe6ff; 
     color: #333; 
   }
   

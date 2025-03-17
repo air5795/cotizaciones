@@ -157,31 +157,7 @@
   }
 
 
-  .estado-btn {
-    padding: 0.25rem 0.5rem; /* Ajusta el padding para que sea compacto */
-    border: none; /* Quita el borde */
-    border-radius: 4px; /* Bordes redondeados */
-    font-size: 12px; /* Tamaño de fuente */
-    font-weight: 600; /* Grosor de la fuente */
-    color: white; /* Texto en blanco */
-    cursor: default; /* Evita que el cursor cambie a pointer */
-  }
-  
-  /* Estilo para el botón "Pendiente" */
-  .pendiente {
-    background-color: #ebebb8; /* Amarillo claro */
-    color: #333; /* Texto oscuro para mejor contraste */
-  }
-  
-  /* Estilo para el botón "Aprobado" */
-  .aprobado {
-    background-color: rgb(78, 214, 146); /* Verde */
-  }
-  
-  /* Estilo para el botón "Observado" */
-  .observado {
-    background-color: #f59999; /* Rojo claro */
-  }
+
 
 
 

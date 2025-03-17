@@ -2,43 +2,26 @@
   <div class="col-12 md:col-12 lg:6">
       <div class="perfil-empleador">
     <div class="header">
-    <div class="header-left">
-        <h2 style="font-size: 30px;"> <i class="pi pi-briefcase" style="font-size: 2.5rem"></i> PLANILLAS DE APORTES  </h2>
-        
+      <div class="header-left">
+        <h2 style="font-size: 30px;"> <i class="pi pi-briefcase" style="font-size: 2.5rem"></i> PLANILLAS DE APORTES </h2>
         <hr style="margin: 2px; border: 1px solid rgba(83, 83, 83, 0.43)">
-        <span class="numero-patronal" >Control Historico Aportes  </span>  
-    </div>
-    <div class="header-right">
-      <div class="button-container">
-        <!-- <span class="razon-social">{{ empresa?.EMP_NOM || 'Cargando...' }}</span>
-        <hr style="margin: 2px; border: 1px solid rgb(225 225 225 / 43%)">
-        <span class="numero-patronal">Cod Patronal: {{ empresa?.EMP_NPATRONAL?.slice(3) || '---' }}</span> -->
-        
-     
-
-                <button 
-                pButton 
-                label="PLANTILLA" 
-                class="boton1"
-                (click)="mostrarModal = true">
-                  <span class="pi pi-download" style="font-size: 2rem; padding-bottom: 10px;"></span>
-                  <span style="font-size: 13px;color: #ffffff;margin-bottom: 2px;" >Descargar</span>
-                </button>
-
-
-                <button 
-              pButton 
-              label="PLANILLA" 
-              class="boton2"
-              (click)="mostrarModal = true">
-                <span class="pi pi-book" style="font-size: 2rem; padding-bottom: 10px;"></span>
-                <span style="font-size: 13px;color: #ffffff;margin-bottom: 2px;" >Nueva</span>
-              </button>
-
-              </div>
-    </div>
+        <span class="numero-patronal">Control Historico Aportes </span>
+      </div>
+      <div class="header-right">
+        <div class="button-container">
+          <button pButton label="PLANTILLA" class="boton1" (click)="mostrarModal = true">
+            <span class="pi pi-download" style="font-size: 2rem; padding-bottom: 10px;"></span>
+            <span style="font-size: 13px;color: #ffffff;margin-bottom: 2px;">Descargar</span>
+          </button>
     
-</div>
+    
+          <button pButton label="PLANILLA" class="boton2" (click)="mostrarModal = true">
+            <span class="pi pi-book" style="font-size: 2rem; padding-bottom: 10px;"></span>
+            <span style="font-size: 13px;color: #ffffff;margin-bottom: 2px;">Nueva</span>
+          </button>
+        </div>
+      </div>
+    </div>
   
 
 <p-table 
@@ -57,7 +40,7 @@ class="tabla-centrada"
 
 <ng-template pTemplate="caption" >
   <div class="flex justify-content-between flex-column sm:flex-row align-items-center" >
-    <button pButton label="Recargar" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="recargar()"></button>
+    <button pButton label="Recargar" class="p-button-outlined mb-2" icon="pi pi-sync" (click)="recargar()"></button>
     <div class="flex flex-column sm:flex-row gap-2 mb-2">
 
       <p-dropdown

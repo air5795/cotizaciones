@@ -54,6 +54,30 @@ export class PlanillasAportesService {
     return this.http.get(`${environment.url}planillas_aportes/historial/${cod_patronal}`, { params });
   }
 
+  obtenerHistorialAdmin(pagina: number = 0, limite: number = 10, busqueda: string = '' , mes?:string, anio?:string , estado?:number): Observable<any> {
+
+    let params = new HttpParams()
+      .set('pagina', pagina)
+      .set('limite', limite);
+    
+    if (busqueda) {
+      params = params.set('busqueda', busqueda);
+    }
+    if (mes) {
+      params = params.set('mes', mes);
+    }
+
+    if (anio) {
+      params = params.set('anio', anio);
+    }
+    if (estado !== undefined && estado !== null) {
+      params = params.set('estado', estado);
+    }
+
+    console.log('Parámetros de la solicitud:', params.toString());
+    return this.http.get(`${environment.url}planillas_aportes/historialAdmin`, { params });
+  }
+
   getPlanillasTodoHistorial(pagina: number = 0, limite: number = 10, busqueda: string = ''): Observable<any> {
     let params = new HttpParams()
       .set('pagina', pagina)  
@@ -156,7 +180,14 @@ findByIdPlanilla(id: number): Observable<PagoAporte[]> {
 }
   
   
-  
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* LIQUIDACION PLANILLAS MENSUALES DE APORTES ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-  
+
+// 1.- Calcular aportes
+calcularAportes(id: number): Observable<any> {
+  return this.http.post(`${environment.url}planillas_aportes/calcular/${id}`, {});
+}
+
 }

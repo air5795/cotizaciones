@@ -119,4 +119,8 @@ onSubmit(): void {
     this.isPdfLoaded = false; // Marcar que el PDF no se cargó
   }
 
+  formatFecha(fecha: string): string {
+    return fecha.split('.')[0]; 
+  }
+
 }
