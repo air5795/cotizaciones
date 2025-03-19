@@ -27,6 +27,7 @@ export class PlanillasAportesListComponent {
   planillaDatos: any[] = []; // Datos extraídos de la planilla Excel para el modal steper
   numPatronal: string | null = null;
   nomEmpresa: string | null = null;
+  tipoEmpresa: string | null = null;
 
   totalRegistros: number = 0;
   pagina: number = 0;
@@ -104,9 +105,11 @@ export class PlanillasAportesListComponent {
       );
       this.numPatronal = usuarioRestriccion?.numPatronalEmpresa || null;
       this.nomEmpresa = usuarioRestriccion?.empresa || null;
+      this.tipoEmpresa = usuarioRestriccion?.tipo || null;
       if (this.numPatronal) {
         console.log('COD patronal:', this.numPatronal.slice(3));
         console.log('Nombre empresa:', this.nomEmpresa);
+        console.log('Tipo empresa:', this.tipoEmpresa);
       }
 
       if (!this.numPatronal) {
@@ -391,7 +394,8 @@ obtenerTotalImporte(): number {
             this.numPatronal ? this.numPatronal.slice(3) : '',
             this.mesSeleccionado, // Cambia el orden aquí
             this.nomEmpresa ? this.nomEmpresa : '',
-            this.gestionSeleccionada!.toString() // Cambia el orden aquí
+            this.tipoEmpresa ? this.tipoEmpresa : '',
+            this.gestionSeleccionada!.toString()
           )
           .subscribe({
             next: (response) => {

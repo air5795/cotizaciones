@@ -15,13 +15,14 @@ export class PlanillasAportesService {
 /* PLANILLAS MENSUALES DE APORTES ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-  subirPlanilla(archivo: File, codPatronal: string, mes: string, empresa: string, gestion: string): Observable<any> {
+  subirPlanilla(archivo: File, codPatronal: string, mes: string, empresa: string, tipo_empresa: string, gestion: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', archivo);
     formData.append('cod_patronal', codPatronal);
     formData.append('gestion', gestion);
     formData.append('mes', mes);
     formData.append('empresa', empresa);
+    formData.append('tipo_empresa', tipo_empresa);
     
 
     return this.http.post(`${environment.url}planillas_aportes/subir`, formData, {
