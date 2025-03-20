@@ -93,7 +93,7 @@
             <td colspan="12" style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               Total Multas:
             </td>
-            <td style="text-align: center; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+            <td style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               {{ planilla.total_multas | currency:'BOB' }}
             </td>
           </tr>
@@ -103,8 +103,17 @@
             <td colspan="12" style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               Total Tasa de Interés:
             </td>
-            <td style="text-align: center; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+            <td style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               {{ planilla.total_tasa_interes | currency:'BOB' }}
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="12" style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+              Form DS-08:
+            </td>
+            <td style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+              5,00 BOB
             </td>
           </tr>
 
@@ -114,7 +123,7 @@
             <td colspan="12" style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               Total Aportes ASUSS:
             </td>
-            <td style="text-align: center; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+            <td style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
              - {{ planilla.total_aportes_asuss | currency:'BOB' }}
             </td>
           </tr>
@@ -123,7 +132,7 @@
             <td colspan="12" style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               Total Aportes Ministerio de Salud:
             </td>
-            <td style="text-align: center; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+            <td style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               - {{ planilla.total_aportes_min_salud | currency:'BOB' }}
             </td>
           </tr>
@@ -132,7 +141,7 @@
             <td colspan="12" style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
               Total a Cancelar:
             </td>
-            <td style="text-align: center; padding: 10px; border: 1px solid #dee2e6; font-weight: bold; background-color: #e5ffed;">
+            <td style="text-align: right; padding: 10px; border: 1px solid #dee2e6; font-weight: bold; background-color: #e5ffed;">
               {{ planilla.total_a_cancelar | currency:'BOB' }}
             </td>
           </tr>
