@@ -596,6 +596,62 @@ obtenerComparacionPlanillas() {
     });
   }
 
+  ReporteDS08() {
+    if (!this.idPlanilla) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No hay datos',
+        text: 'No se ha cargado el ID de la planilla.',
+        confirmButtonText: 'Ok',
+      });
+      return;
+    }
+
+    this.planillasService.generarReporteDS08(this.idPlanilla).subscribe({
+      next: (data: Blob) => {
+        const fileURL = URL.createObjectURL(data);
+        const ventanaEmergente = window.open(
+          '',
+          'VistaPreviaPDF',
+          'width=900,height=600,scrollbars=no,resizable=no'
+        );
+
+        if (ventanaEmergente) {
+          ventanaEmergente.document.write(`
+              <html>
+                <head>
+                  <title>Vista Previa del PDF</title>
+                  <style>
+                    body { margin: 0; text-align: center; }
+                    iframe { width: 100%; height: 100vh; border: none; }
+                  </style>
+                </head>
+                <body>
+                  <iframe src="${fileURL}"></iframe>
+                </body>
+              </html>
+            `);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo abrir la vista previa del PDF. Es posible que el navegador haya bloqueado la ventana emergente.',
+            confirmButtonText: 'Ok',
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error al generar el reporte resumen:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo generar el reporte resumen.',
+          confirmButtonText: 'Ok',
+        });
+      },
+    });
+  }
+
   // resumen por regionales ----------------------------------------------------------------------------------------------------
 
   obtenerResumenPlanilla() {

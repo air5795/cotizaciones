@@ -154,21 +154,21 @@ export class PlanillasAportesService {
 /* PAGOS PLANILLAS MENSUALES DE APORTES ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-  // 1. Crear un pago con imagen
-  createPago(pagoData: any, file: File): Observable<PagoAporte> {
-    const formData = new FormData();
-    formData.append('id_planilla_aportes', pagoData.id_planilla_aportes);
-    formData.append('fecha_pago', pagoData.fecha_pago);
-    formData.append('monto_pagado', pagoData.monto_pagado);
-    formData.append('metodo_pago', pagoData.metodo_pago);
-    formData.append('comprobante_pago', pagoData.comprobante_pago);
-    formData.append('observaciones', pagoData.observaciones);
-    if (file) {
-      formData.append('foto_comprobante', file, file.name); 
-    }
-
-    return this.http.post<any>(`${environment.url}pagos-aportes/create`, formData);
+// 1. Crear un pago con imagen
+createPago(pagoData: any, file: File): Observable<PagoAporte> {
+  const formData = new FormData();
+  formData.append('id_planilla_aportes', pagoData.id_planilla_aportes);
+  formData.append('fecha_pago', pagoData.fecha_pago);
+  formData.append('monto_pagado', pagoData.monto_pagado);
+  formData.append('metodo_pago', pagoData.metodo_pago || '');
+  formData.append('comprobante_pago', pagoData.comprobante_pago || '');
+  formData.append('observaciones', pagoData.observaciones || '');
+  if (file) {
+    formData.append('foto_comprobante', file, file.name);
   }
+
+  return this.http.post<PagoAporte>(`${environment.url}pagos-aportes/create`, formData);
+}
 
 // 2. Listar todos los pagos
 findAll(): Observable<PagoAporte[]> {
@@ -178,6 +178,20 @@ findAll(): Observable<PagoAporte[]> {
 // 3. Listar pagos por id_planilla_aportes (ajustado para devolver una lista)
 findByIdPlanilla(id: number): Observable<PagoAporte[]> {
   return this.http.get<PagoAporte[]>(`${environment.url}pagos-aportes/by-id/${id}`);
+}
+
+// 4. Nuevo método para calcular el total a cancelar preliminar
+calcularAportesPreliminar(idPlanilla: number, fechaPago: string): Observable<any> {
+  const body = { fecha_pago: fechaPago };
+  return this.http.post<any>(`${environment.url}planillas_aportes/calcular-preliminar`, body, {
+    params: { id: idPlanilla.toString() },
+  });
+}
+
+generarReporteDS08(id_planilla: number): Observable<Blob> {
+  return this.http.get(`${environment.url}planillas_aportes/reporte-aportes/${id_planilla}`, {
+    responseType: 'blob' 
+  });
 }
   
   

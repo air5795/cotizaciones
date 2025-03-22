@@ -102,12 +102,14 @@
 
             <button 
               pButton 
+              *ngIf="planillaInfo.planilla.fecha_pago != null"
               label="DS-08" 
               class="boton4"
               style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; width: 80px; " 
-              (click)="exportarPdfrResumen()">
+              (click)="ReporteDS08() ">
                 <span class="pi pi-book" style="font-size: 2rem; padding-bottom: 10px;"></span>
                 <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Formulario</span>
+              
               </button>
 
 <!--               <button 
@@ -671,10 +673,13 @@ currentPageReportTemplate="Mostrando registros del {first} al {last} de un total
         </p-table>
 
   </p-tabPanel>
-  <p-tabPanel header="Pagos" leftIcon="pi pi-money-bill">
+  <p-tabPanel *ngIf="planillaInfo.planilla.estado != 0" header="Pagos" leftIcon="pi pi-money-bill">
     <app-pagos-aportes [idPlanilla]="idPlanilla"></app-pagos-aportes>
   </p-tabPanel>
-  <p-tabPanel header="Planillas Adicionales" leftIcon="pi pi-plus">
+  <p-tabPanel *ngIf="planillaInfo.planilla.estado != 0 || planillaInfo.planilla.fecha_pago" header="Liquidaciones" leftIcon="pi pi-calculator">
+    <app-liquidaciones-aportes [idPlanilla]="idPlanilla"></app-liquidaciones-aportes>
+  </p-tabPanel>
+  <p-tabPanel *ngIf="planillaInfo.planilla.estado != 0" header="Planillas Adicionales" leftIcon="pi pi-plus">
     <app-planillas-adicionales></app-planillas-adicionales>
   </p-tabPanel>
 </p-tabView>
