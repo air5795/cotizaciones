@@ -1,4 +1,3 @@
-// src/app/components/pagos-aportes/pagos-aportes.component.ts
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { PlanillasAportesService } from '../../../servicios/planillas-aportes/planillas-aportes.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -7,6 +6,8 @@ import { Dialog } from 'primeng/dialog';
 import { PagoAporte } from '../../../models/pago-aporte.model';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { MenuItem } from 'primeng/api'; // Para los pasos del stepper
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // Para manejar URLs seguras
 
 @Component({
   selector: 'app-pagos-aportes',
@@ -31,12 +32,26 @@ export class PagosAportesComponent implements OnInit {
   isPdfLoaded: boolean = true;
   calculoDetalles: any = null;
   calculating: boolean = false;
+  activeStep: number = 0;
+  previewUrl: SafeResourceUrl | null = null; // Para la vista previa del archivo
+  isPdf: boolean = false; // Determina si el archivo es PDF o imagen
+  steps: MenuItem[] = [
+    { label: 'Fecha de Pago' },
+    { label: 'Detalles del Cálculo' },
+    { label: 'Detalles del Pago' },
+    { label: 'Confirmación' },
+  ];
+  metodoPagoOptions: any[] = [ // Opciones para el dropdown de método de pago
+    { label: 'SIGEP', value: 'SIGEP' },
+    { label: 'DEPOSITO O TRANSFERENCIA', value: 'DEPOSITO O TRANSFERENCIA' },
+  ];
 
   constructor(
     private planillasAportesService: PlanillasAportesService,
     private fb: FormBuilder,
     private messageService: MessageService,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer // Para sanitizar URLs
   ) {
     this.pagoForm = this.fb.group({
       id_planilla_aportes: ['', Validators.required],
@@ -89,11 +104,11 @@ export class PagosAportesComponent implements OnInit {
     );
   }
 
-  // Calcular el total a cancelar al hacer clic en el botón
+  // Calcular el total a cancelar
   calcularTotalACancelar(): void {
     const fechaPago = this.pagoForm.get('fecha_pago')?.value;
     console.log('Fecha seleccionada en el formulario:', fechaPago);
-  
+
     if (!fechaPago) {
       this.messageService.add({
         severity: 'warn',
@@ -102,16 +117,15 @@ export class PagosAportesComponent implements OnInit {
       });
       return;
     }
-  
+
     let fechaPagoDate: Date;
     if (fechaPago.length === 16) {
-      // Formato de datetime-local: "2025-03-20T17:03"
       fechaPagoDate = new Date(`${fechaPago}:00.000Z`);
     } else {
       fechaPagoDate = new Date(fechaPago);
     }
     console.log('Fecha convertida a Date:', fechaPagoDate);
-  
+
     if (isNaN(fechaPagoDate.getTime())) {
       this.messageService.add({
         severity: 'error',
@@ -120,26 +134,25 @@ export class PagosAportesComponent implements OnInit {
       });
       return;
     }
-  
+
     const fechaPagoIso = fechaPagoDate.toISOString();
     console.log('Fecha en formato ISO para enviar al backend:', fechaPagoIso);
-  
-    this.calculating = true; // Mostrar loading
+
+    this.calculating = true;
     this.planillasAportesService
       .calcularAportesPreliminar(this.idPlanilla, fechaPagoIso)
       .subscribe(
         (detalles) => {
-          // Redondear total_a_cancelar a 2 decimales
           detalles.total_a_cancelar = Math.round(detalles.total_a_cancelar * 100) / 100;
-  
           this.calculoDetalles = detalles;
-          this.pagoForm.patchValue({ monto_pagado: detalles.total_a_cancelar }); // Asignar total_a_cancelar a monto_pagado
+          this.pagoForm.patchValue({ monto_pagado: detalles.total_a_cancelar });
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
             detail: 'Cálculo preliminar realizado con éxito.',
           });
-          this.calculating = false; // Ocultar loading
+          this.calculating = false;
+          this.activeStep = 1;
         },
         (error) => {
           console.error('Error al calcular el total a cancelar:', error);
@@ -149,7 +162,7 @@ export class PagosAportesComponent implements OnInit {
             summary: 'Error',
             detail: 'No se pudo calcular el total a cancelar. Por favor, intenta de nuevo.',
           });
-          this.calculating = false; // Ocultar loading
+          this.calculating = false;
         }
       );
   }
@@ -166,7 +179,9 @@ export class PagosAportesComponent implements OnInit {
           this.pagoForm.reset();
           this.pagoForm.patchValue({ id_planilla_aportes: this.idPlanilla });
           this.selectedFile = null;
+          this.previewUrl = null; // Reinicia la vista previa
           this.calculoDetalles = null;
+          this.activeStep = 0;
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
@@ -186,9 +201,17 @@ export class PagosAportesComponent implements OnInit {
     }
   }
 
-  // Manejar la selección del archivo
+  // Manejar la selección del archivo y generar vista previa
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0] as File;
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.isPdf = this.selectedFile!.type === 'application/pdf';
+        this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(e.target.result);
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
   }
 
   // Abrir el modal para crear pago
@@ -196,7 +219,9 @@ export class PagosAportesComponent implements OnInit {
     this.pagoForm.reset();
     this.pagoForm.patchValue({ id_planilla_aportes: this.idPlanilla });
     this.selectedFile = null;
+    this.previewUrl = null; // Reinicia la vista previa
     this.calculoDetalles = null;
+    this.activeStep = 0;
     this.displayDialog = true;
   }
 
@@ -205,12 +230,14 @@ export class PagosAportesComponent implements OnInit {
     this.pagoForm.reset();
     this.pagoForm.patchValue({ id_planilla_aportes: this.idPlanilla });
     this.selectedFile = null;
+    this.previewUrl = null; // Reinicia la vista previa
     this.calculoDetalles = null;
+    this.activeStep = 0;
   }
 
   // Abrir el modal para ver la imagen
   openImageDialog(pago: PagoAporte): void {
-    this.selectedImageUrl = `http://localhost:4000/${pago.foto_comprobante}`;
+    this.selectedImageUrl = `http://10.0.0.152:4000/${pago.foto_comprobante}`;
     this.isPdfLoaded = true;
     this.displayImageDialog = true;
   }
@@ -221,6 +248,7 @@ export class PagosAportesComponent implements OnInit {
     this.isPdfLoaded = false;
   }
 
+  // Formatear la fecha
   formatFecha(fecha: string): string {
     return fecha.split('.')[0];
   }
