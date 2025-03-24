@@ -83,7 +83,7 @@ export class PagosAportesAdminComponent implements OnInit {
   }
 
   openImageDialog(pago: PagoAporte): void {
-    this.selectedImageUrl = `http://localhost:4000/${pago.foto_comprobante}`;
+    this.selectedImageUrl = `http://10.0.0.152:4000/${pago.foto_comprobante}`;
     this.isPdfLoaded = true;
     this.displayImageDialog = true;
   }
