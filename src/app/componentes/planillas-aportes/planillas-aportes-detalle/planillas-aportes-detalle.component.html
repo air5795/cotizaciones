@@ -112,6 +112,18 @@
               
               </button>
 
+              <button 
+              pButton 
+              *ngIf="planillaInfo.planilla.estado != 0 "
+              label="Declaración" 
+              class="boton3"
+              style="display: flex; flex-direction: column; align-items: center; font-size: 1rem; width: 80px; " 
+              (click)="ReporteAporte() ">
+                <span class="pi pi-book" style="font-size: 2rem; padding-bottom: 10px;"></span>
+                <span style="font-size: 10px;color: #ffffff;border-bottom: 1px solid white;margin-bottom: 2px;" >Descargar</span>
+              
+              </button>
+
 <!--               <button 
               *ngIf="planillaInfo.planilla.estado != 2 "
               pButton 
@@ -679,8 +691,8 @@ currentPageReportTemplate="Mostrando registros del {first} al {last} de un total
   <p-tabPanel *ngIf="planillaInfo.planilla.estado != 0 || planillaInfo.planilla.fecha_pago" header="Liquidaciones" leftIcon="pi pi-calculator">
     <app-liquidaciones-aportes [idPlanilla]="idPlanilla"></app-liquidaciones-aportes>
   </p-tabPanel>
-  <p-tabPanel *ngIf="planillaInfo.planilla.estado != 0" header="Planillas Adicionales" leftIcon="pi pi-plus">
-    <app-planillas-adicionales></app-planillas-adicionales>
+  <p-tabPanel *ngIf="planillaInfo.planilla.estado != 0" header="Crear Planillas Adicionales" leftIcon="pi pi-plus" styleClass="separated-tab">
+    <app-planillas-adicionales [idPlanilla]="idPlanilla"></app-planillas-adicionales>
   </p-tabPanel>
 </p-tabView>
 

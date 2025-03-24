@@ -176,6 +176,7 @@
     border: 1px solid #cfcfcf;
   }
 
+
 .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
     background-color: #be4242;
     color: #03533f;
@@ -226,11 +227,23 @@
     color: #a77428;
     border: 1px solid #cfcfcf;
   }
+
   .p-tabview .p-tabview-nav li:nth-child(7).p-highlight .p-tabview-nav-link {
     background-color: #e6f8ff; 
     color: #2894a7;
     border: 1px solid #cfcfcf;
   }
+
+
+/* Mueve la pestaña específica al extremo derecho */
+.p-tabview .p-tabview-nav li:nth-child(7) {
+  margin-left: auto;
+}
+
+
+
+
+  
 
 
 
@@ -287,3 +300,7 @@
   .green-check {
     color: green; /* Green checkmark */
   }
+
+
+  /*********************************************************************************************************/
+

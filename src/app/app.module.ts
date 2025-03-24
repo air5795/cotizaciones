@@ -136,6 +136,9 @@ import { SafeUrlPipe } from './pipes/safe-url.pipe';
 import localeEs from '@angular/common/locales/es';
 import { FormatFechaPipe } from './pipes/format-fecha.pipe';
 import { LiquidacionesAportesComponent } from './componentes/planillas-aportes/liquidaciones-aportes/liquidaciones-aportes.component';
+import { PlanillasAdicionalesDetallesComponent } from './componentes/planillas-aportes/planillas-adicionales/planillas-adicionales-detalles/planillas-adicionales-detalles.component';
+import { PagosAportesAdicionalesComponent } from './componentes/planillas-aportes/planillas-adicionales/pagos-aportes-adicionales/pagos-aportes-adicionales.component';
+import { PagosAportesAdminComponent } from './componentes/planillas-aportes/pagos-aportes-admin/pagos-aportes-admin.component';
 
 registerLocaleData(localeEs);
 
@@ -265,6 +268,9 @@ registerLocaleData(localeEs);
     SafeUrlPipe,
     FormatFechaPipe,
     LiquidacionesAportesComponent,
+    PlanillasAdicionalesDetallesComponent,
+    PagosAportesAdicionalesComponent,
+    PagosAportesAdminComponent,
   ],
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, CountryService, CustomerService, EventService, IconService, NodeService,
     PhotoService, ProductService, MenuService , MessageService , { provide: LOCALE_ID, useValue: 'es' } ],

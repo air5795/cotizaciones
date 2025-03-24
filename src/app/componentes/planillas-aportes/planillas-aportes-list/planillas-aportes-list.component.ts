@@ -28,6 +28,8 @@ export class PlanillasAportesListComponent {
   numPatronal: string | null = null;
   nomEmpresa: string | null = null;
   tipoEmpresa: string | null = null;
+  nit: string | null = null;
+  legal: string | null = null;
 
   totalRegistros: number = 0;
   pagina: number = 0;
@@ -106,10 +108,14 @@ export class PlanillasAportesListComponent {
       this.numPatronal = usuarioRestriccion?.numPatronalEmpresa || null;
       this.nomEmpresa = usuarioRestriccion?.empresa || null;
       this.tipoEmpresa = usuarioRestriccion?.tipo || null;
+      this.nit = usuarioRestriccion?.emp_nit || null;
+      this.legal = usuarioRestriccion?.emp_legal || null;
       if (this.numPatronal) {
         console.log('COD patronal:', this.numPatronal.slice(3));
         console.log('Nombre empresa:', this.nomEmpresa);
         console.log('Tipo empresa:', this.tipoEmpresa);
+        console.log('NIT:', this.nit);
+        console.log('Legal:', this.legal);
       }
 
       if (!this.numPatronal) {
@@ -395,6 +401,8 @@ obtenerTotalImporte(): number {
             this.mesSeleccionado, // Cambia el orden aquí
             this.nomEmpresa ? this.nomEmpresa : '',
             this.tipoEmpresa ? this.tipoEmpresa : '',
+            this.nit ? this.nit : '',
+            this.legal ? this.legal : '',
             this.gestionSeleccionada!.toString()
           )
           .subscribe({

@@ -1,12 +1,10 @@
-export interface PagoAporte {
+export interface PagoAporteAdicional {
     id?: number; 
-    id_planilla_aportes: number;
+    id_planilla_adicional: number;
     fecha_pago: string;
     monto_pagado: number;
     metodo_pago: string;
     comprobante_pago: string;
     observaciones: string;
     foto_comprobante?: string;
-    empresa: string; // Nuevo campo
-  fecha_planilla: string; // Nuevo campo
   }

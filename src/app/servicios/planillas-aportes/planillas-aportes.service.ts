@@ -15,7 +15,7 @@ export class PlanillasAportesService {
 /* PLANILLAS MENSUALES DE APORTES ////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 /* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-  subirPlanilla(archivo: File, codPatronal: string, mes: string, empresa: string, tipo_empresa: string, gestion: string): Observable<any> {
+  subirPlanilla(archivo: File, codPatronal: string, mes: string, empresa: string, tipo_empresa: string, nit:string, legal: string, gestion: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', archivo);
     formData.append('cod_patronal', codPatronal);
@@ -23,6 +23,8 @@ export class PlanillasAportesService {
     formData.append('mes', mes);
     formData.append('empresa', empresa);
     formData.append('tipo_empresa', tipo_empresa);
+    formData.append('nit', nit);
+    formData.append('legal', legal);
     
 
     return this.http.post(`${environment.url}planillas_aportes/subir`, formData, {
@@ -121,8 +123,9 @@ export class PlanillasAportesService {
     return this.http.put(`${environment.url}planillas_aportes/estado/${id_planilla}`, body);
   }
 
-  actualizarEstadoAPendiente(idPlanilla: number) {
-    return this.http.put(`${environment.url}planillas_aportes/estado/pendiente/${idPlanilla}`, {});
+  actualizarEstadoAPendiente(idPlanilla: number, fechaDeclaracion?: string | null) {
+    const body = fechaDeclaracion ? { fecha_declarada: fechaDeclaracion } : {};
+    return this.http.put(`${environment.url}planillas_aportes/estado/pendiente/${idPlanilla}`, body);
   }
 
   eliminarDetallesPlanilla(id_planilla: number): Observable<any> {
@@ -191,6 +194,28 @@ calcularAportesPreliminar(idPlanilla: number, fechaPago: string): Observable<any
 generarReporteDS08(id_planilla: number): Observable<Blob> {
   return this.http.get(`${environment.url}planillas_aportes/reporte-aportes/${id_planilla}`, {
     responseType: 'blob' 
+  });
+}
+
+generarReporteAporte(id_planilla: number): Observable<Blob> {
+  return this.http.get(`${environment.url}planillas_aportes/reporte-planilla-regional/${id_planilla}`, {
+    responseType: 'blob' 
+  });
+}
+
+findAllWithDetails(): Observable<any> {
+  return this.http.get(`${environment.url}pagos-aportes/lista-pagos`);
+}
+
+generarReportePagoAporte(id_planilla_aportes: number): Observable<Blob> {
+  return this.http.get(`${environment.url}pagos-aportes/reporte-pago/${id_planilla_aportes}`, {
+    responseType: 'blob'
+  });
+}
+
+generarReporteHistorial(mes: number, gestion: number): Observable<Blob> {
+  return this.http.get(`${environment.url}planillas_aportes/reporte-aportes-mes/${mes}/${gestion}`, {
+    responseType: 'blob'
   });
 }
   
